@@ -1,39 +1,79 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import { View, Text } from "react-native";
+import React, { useEffect } from "react";
+import { Stack } from "expo-router";
+import { useFonts } from "expo-font";
+import TimerProvider from "@/context/TimerContext";
+import { CalendarProvider } from "@/context/CalendarContext"; // Adjust the path
+import { MeditationsProvider } from "@/context/MeditationsContext";
+import AlarmProvider from "@/context/AlarmContext";
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+const RootLayout = () => {
+  // const [fontsLoaded, error] = useFonts({
+  //   Inter: require("../assets/fonts/Inter-VariableFont_opsz,wght.ttf"),
+  //   PlayfairDisplay: require("../assets/fonts/PlayfairDisplay-VariableFont_wght.ttf"),
+  // });
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+  //   useEffect(() => {
+  //     if (error) throw error;
+  //     if (fontsLoaded) SplashScreen.hideAsync();
+  //   }, [fontsLoaded, error]);
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
+  //   if (!fontsLoaded) return null;
+  //   if (!fontsLoaded && !error) return null;
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <MeditationsProvider>
+      <CalendarProvider>
+        <AlarmProvider>
+          <TimerProvider>
+            <Stack>
+              <Stack.Screen
+                name="(tabs)"
+                options={{ headerShown: false, gestureEnabled: false }}
+              />
+              <Stack.Screen
+                name="index"
+                options={{ headerShown: false, gestureEnabled: false }}
+              />
+              <Stack.Screen
+                name="meditation"
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="meditation-summary"
+                options={{
+                  headerShown: false,
+                  gestureEnabled: false,
+                  animation: "slide_from_left",
+                }}
+              />
+              <Stack.Screen
+                name="(modal)/pre-checkup"
+                options={{
+                  headerShown: false,
+                  presentation: "modal",
+                }}
+              />
+              <Stack.Screen
+                name="(modal)/post-checkup"
+                options={{
+                  headerShown: false,
+                  presentation: "modal",
+                }}
+              />
+              <Stack.Screen
+                name="(modal)/set-timer"
+                options={{
+                  headerShown: false,
+                  presentation: "containedTransparentModal",
+                }}
+              />
+            </Stack>
+          </TimerProvider>
+        </AlarmProvider>
+      </CalendarProvider>
+    </MeditationsProvider>
   );
-}
+};
+
+export default RootLayout;
