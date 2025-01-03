@@ -1,4 +1,4 @@
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, StyleSheet } from "react-native";
 import React from "react";
 import { Stack, useRouter, useSegments } from "expo-router";
 import colors from "tailwindcss/colors";
@@ -17,8 +17,14 @@ const ActivityLayout = () => {
             headerShown: true,
             headerTransparent: true,
             headerTitle: "Activity",
-            headerTitleStyle: { color: colors.transparent },
+            headerTitleStyle: { color: colors.gray[900] },
             headerTintColor: colors.gray[900],
+            headerLargeTitle: true,
+            headerLargeTitleStyle: {
+              fontFamily: "Inter",
+              fontWeight: "600",
+              color: colors.gray[900],
+            },
           }}
         />
 
@@ -32,7 +38,18 @@ const ActivityLayout = () => {
             headerTintColor: colors.gray[900],
           }}
         />
-
+        <Stack.Screen
+          name="meditation-summary"
+          options={{
+            headerShown: true,
+            headerTransparent: true,
+            gestureEnabled: false,
+            headerTitle: "Summary",
+            headerTitleStyle: { color: colors.transparent },
+            headerTintColor: colors.gray[900],
+            animation: "slide_from_left",
+          }}
+        />
         <Stack.Screen
           name="meditations-calendar"
           options={{
@@ -97,13 +114,27 @@ const ActivityLayout = () => {
             headerShown: true,
             headerTransparent: true,
             headerTitle: "Meditations",
-            headerTitleStyle: { color: colors.transparent },
+            headerTitleStyle: { color: colors.gray[900] },
             headerTintColor: colors.gray[900],
+            headerLargeTitle: true,
+            headerLargeTitleStyle: {
+              fontFamily: "Inter",
+              fontWeight: "600",
+              color: colors.gray[900],
+            },
           }}
         />
 
         <Stack.Screen
           name="(modal)/days-meditations"
+          options={{
+            headerShown: false,
+            presentation: "modal",
+          }}
+        />
+
+        <Stack.Screen
+          name="(modal)/read-entry"
           options={{
             headerShown: false,
             presentation: "modal",
@@ -115,3 +146,9 @@ const ActivityLayout = () => {
 };
 
 export default ActivityLayout;
+
+const headerStyles = StyleSheet.create({
+  headerTitleLarge: {
+    fontFamily: "Inter",
+  },
+});

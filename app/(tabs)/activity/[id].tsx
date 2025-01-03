@@ -13,7 +13,13 @@ import { router, useLocalSearchParams } from "expo-router";
 import MeditationActivityWidget from "@/components/MeditationActivityWidget";
 import ActivityFrame from "@/components/ActivityFrame";
 import CustomButton from "@/components/CustomButton";
-import { formatDuration, getMeditation, removeMeditation } from "@/storage";
+import {
+  formatDuration,
+  getMeditation,
+  getMoodIcon,
+  getMoodIconColor,
+  removeMeditation,
+} from "@/storage";
 import { Feather } from "@expo/vector-icons";
 import colors from "tailwindcss/colors";
 import { LinearGradient } from "expo-linear-gradient";
@@ -185,18 +191,20 @@ const MeditationDetails = () => {
       {/* {fromSummary && renderBackButton()} */}
 
       <SafeAreaView className="flex-1">
-        <View style={{ marginTop: -20 }}>{fromSummary && renderBackButton()}</View>
+        <View style={{ marginTop: -20 }}>
+          {/* {fromSummary && renderBackButton()} */}
+        </View>
 
         <ScrollView>
           <View className="mx-5 mt-5 mb-14">
-            <Text className="text-gray-900/50 text-xl font-semibold mx-5">
+            <Text className="text-gray-900/50 text-xl font-semibold mx-2">
               {getDateWeekday(date)}
             </Text>
             <View className="flex-row relative">
-              <Text className="text-gray-900 text-3xl font-semibold mb-5 mx-5 absolute left-0">
+              <Text className="text-gray-900 text-3xl font-semibold mb-5 mx-2 absolute left-0">
                 {getDateMonth(date)} {getDateDay(date)}
               </Text>
-              <View className="absolute right-0 mx-5">
+              <View className="absolute right-0 mx-2">
                 {renderShareButton()}
               </View>
             </View>
@@ -204,13 +212,13 @@ const MeditationDetails = () => {
 
           <View className="bg-gray-100 rounded-t-3xl h-full">
             <View className="mx-5">
-              <View className="flex-row mx-5 items-center mt-7 mb-2">
+              <View className="flex-row items-center mt-4 mb-2">
                 <Feather name="clock" size={26} color={colors.orange[400]} />
                 <Text className="px-2 first-letter:text-xl font-semibold">
                   {formatDurationString(duration)}
                 </Text>
               </View>
-              <View className="flex-row pt-5 pb-2 relative justify-between mx-5">
+              <View className="flex-row pt-5 pb-2 relative justify-between mx-2">
                 <Text className="font-semibold text-2xl left-0">Stats</Text>
                 <Pressable
                   className="right-0 py-1"
@@ -223,20 +231,22 @@ const MeditationDetails = () => {
                   </Text>
                 </Pressable>
               </View>
-              <View className="flex-row justify-center pb-10">
+              <View className="flex-row justify-center mb-5">
                 <ActivityFrame
                   title="Mood"
                   icon={
                     <Feather
-                      name="arrow-up-circle"
+                      name={getMoodIcon(moodFigure)}
                       size={28}
-                      color={colors.green[500]}
+                      color={getMoodIconColor(moodFigure)}
                     />
                   }
                   amount={
                     moodFigure !== null ? `${moodFigure.toFixed(0)}%` : "--"
                   }
                   active={true}
+                  fromSummary={false}
+                  id={id}
                 />
                 <ActivityFrame
                   title="Breaths"
@@ -247,6 +257,8 @@ const MeditationDetails = () => {
                     breathCount !== null ? `${breathCount.toFixed(1)}` : "--"
                   }
                   active={false}
+                  fromSummary={false}
+                  id={id}
                 />
               </View>
             </View>
@@ -284,12 +296,25 @@ const MeditationDetails = () => {
               >
                 {ENTRY_DATA.map((item, index) => (
                   <View className="z-10 shadow-lg">
-                    <EntryCard
-                      key={index}
-                      title={item.title}
-                      mood={item.mood}
-                      entry={item.entry}
-                    />
+                    <Pressable
+                      onPress={() => {
+                        router.push({
+                          pathname: `/(tabs)/activity/read-entry`,
+                          params: {
+                            title: item.title,
+                            mood: item.mood,
+                            entry: item.entry,
+                          }, // Pass the id as a query parameter
+                        });
+                      }}
+                    >
+                      <EntryCard
+                        key={index}
+                        title={item.title}
+                        mood={item.mood}
+                        entry={item.entry}
+                      />
+                    </Pressable>
                   </View>
                 ))}
               </Swiper>

@@ -1,20 +1,5 @@
-import { View, Text, SafeAreaView, StyleSheet, Pressable } from "react-native";
-import React, { useEffect, useState } from "react";
-import colors from "tailwindcss/colors";
-import { LinearGradient } from "expo-linear-gradient";
-import MeditationActivityWidget from "@/components/MeditationActivityWidget";
-import CustomButton from "@/components/CustomButton";
-import ActivityFrame from "@/components/ActivityFrame";
-import { Feather } from "@expo/vector-icons";
-import { router, useLocalSearchParams } from "expo-router";
-import {
-  getLastMeditation,
-  formatDuration,
-  formatDate,
-  getMeditation,
-} from "@/storage";
-import Swiper from "react-native-swiper";
-import EntryCard from "@/components/EntryCard";
+import { View, Text, SafeAreaView, StyleSheet } from "react-native";
+import React from "react";
 
 const MeditationSummaryLoading = () => {
   return (

@@ -18,7 +18,7 @@ const ActivityFrame = ({ title, icon, amount, active, fromSummary, id }) => {
         }
       }}
     >
-      <View className="bg-white rounded-3xl shadow-md p-4 min-w-[170px] items-start m-2">
+      <View className="bg-white rounded-3xl shadow-md p-4 min-w-[190px] items-start m-2">
         <Text className="text-gray-400 font-semibold text-sm">{title}</Text>
         <View className="mt-4 space-x-1">
           <View>{icon}</View>

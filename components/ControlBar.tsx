@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import colors from "tailwindcss/colors";
 import { router } from "expo-router";
+import { useAlarm } from "@/context/AlarmContext";
 
 const ControlBar = ({
   isVisible = true,
@@ -25,9 +26,17 @@ const ControlBar = ({
   const handleAlarmToggle = () => {
     onAlarmToggle?.(true);
     router.push({
-      pathname: "/(modal)/set-timer",
+      pathname: isAlarmActive() ? "(modal)/edit-alarm" : "/(modal)/set-alarm",
       params: { onAlarmSet: true },
     });
+  };
+
+  const [alarmOn, setAlarmOn] = useState(false);
+  const { alarmDate } = useAlarm();
+
+  const isAlarmActive = () => {
+    const now = new Date();
+    return alarmDate > now;
   };
 
   return (
@@ -47,7 +56,11 @@ const ControlBar = ({
           {currentTime}
         </Text>
         <Pressable onPress={handleAlarmToggle} className="p-5 absolute right-0">
-          <Feather name="clock" size={24} color={colors.orange[400]} />
+          <Feather
+            name="clock"
+            size={24}
+            color={isAlarmActive() ? colors.orange[400] : colors.gray[400]}
+          />
         </Pressable>
       </View>
     </View>

@@ -73,22 +73,21 @@ const MeditationsActivity = () => {
         id={item.id}
         date={item.date}
         duration={item.duration}
-        mood={item.moodFigure}
+        mood={
+          item.moodFigure !== null ? `${item.moodFigure.toFixed(0)}%` : "--"
+        }
+        moodFigure={item.moodFigure}
       />
     </Pressable>
   );
 
   return (
-    <View className="flex-1 bg-gray-200">
+    <SafeAreaView className="flex-1 bg-gray-200">
       <ScrollView>
-        <SafeAreaView className="flex-1">
-          <Text className="text-gray-900 text-3xl font-semibold my-5 mx-10">
-            Meditations
-          </Text>
-
+        <View className="flex-1 mt-2">
           <CalendarWidget />
 
-          <View className="flex-row pt-5 pb-2 relative justify-between mx-10 mt-5">
+          <View className="flex-row pt-5 pb-2 relative justify-between mx-7 mt-5">
             <Text className="font-semibold text-2xl left-0">Recent</Text>
 
             <Pressable
@@ -115,9 +114,9 @@ const MeditationsActivity = () => {
             contentContainerStyle={{ paddingHorizontal: 10, paddingBottom: 20 }}
             nestedScrollEnabled // Allow the FlatList to scroll within the ScrollView
           />
-        </SafeAreaView>
+        </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 

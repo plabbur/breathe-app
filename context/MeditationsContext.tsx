@@ -8,6 +8,8 @@ const eventEmitter = new EventEmitter();
 // Create the context
 const MeditationsContext = createContext();
 
+
+
 // Provider component
 export const MeditationsProvider = ({ children }) => {
   const [meditations, setMeditations] = useState([]);

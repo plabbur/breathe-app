@@ -5,6 +5,9 @@ import uuid from 'react-native-uuid';
 // Key for storing meditations
 const MEDITATIONS_KEY = 'meditations';
 
+import { Feather } from '@expo/vector-icons';
+import colors from 'tailwindcss/colors';
+
 class Meditation {
     constructor(id, moodBefore, entryBefore, date, moodAfter = null, entryAfter = null, duration = null, breathCount = null, moodFigure = 0) {
         this.id = id;
@@ -498,4 +501,31 @@ export const getThisWeekAverages = (meditations) => {
     } else {
         return null
     }
+  }
+
+  export const getMoodIcon = (mood) => {
+    if (mood === null || mood === 0) {
+        return "minus-circle"
+    } else if (mood < 0) {
+        return "arrow-down-circle"
+    } else {
+        return "arrow-up-circle"
+    }
+  }
+
+  export const getMoodIconColor = (mood) => {
+    if (mood === null || mood === 0) {
+        return colors.gray[300];
+    } else if (mood < 0) {
+        return colors.red[500];
+    } else {
+        return colors.green[500];
+    }
+  }
+
+  export function toTitleCase(str) {
+    return str.replace(
+      /\w\S*/g,
+      (text) => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase()
+    );
   }

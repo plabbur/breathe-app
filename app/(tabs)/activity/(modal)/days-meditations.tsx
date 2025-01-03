@@ -58,7 +58,10 @@ const DaysMeditation = () => {
         id={item.id}
         date={item.date}
         duration={item.duration}
-        mood={item.moodFigure}
+        mood={
+          item.moodFigure !== null ? `${item.moodFigure.toFixed(0)}%` : "--"
+        }
+        moodFigure={item.moodFigure}
       />
     </Pressable>
   );

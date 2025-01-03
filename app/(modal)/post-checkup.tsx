@@ -47,7 +47,7 @@ const Checkup = () => {
 
                 router.dismiss();
                 router.push({
-                  pathname: "/meditation-summary",
+                  pathname: `/activity/${id}`,
                   params: { id: id }, // Pass the id as a query parameter
                 });
                 console.log("skip");
@@ -91,7 +91,7 @@ const Checkup = () => {
                 await updateMeditationEntry(id, selectedEmoji + 1, text); // Wait for update
                 router.dismiss();
                 router.push({
-                  pathname: "/meditation-summary",
+                  pathname: `/activity/${id}`,
                   params: { id: id },
                 });
               }

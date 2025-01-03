@@ -12,10 +12,12 @@ import {
   formatDuration,
   formatDate,
   getMeditation,
+  getMoodIcon,
+  getMoodIconColor,
 } from "@/storage";
 import Swiper from "react-native-swiper";
 import EntryCard from "@/components/EntryCard";
-import MeditationSummaryLoading from "./(loading)/meditation-summary-loading";
+import MeditationSummaryLoading from "../../(loading)/meditation-summary-loading";
 
 const MeditationSummary = () => {
   const { id } = useLocalSearchParams(); // Extract the id from the route parameters
@@ -79,7 +81,7 @@ const MeditationSummary = () => {
       </View>
 
       <SafeAreaView className="flex-1">
-        <Text className="text-gray-900 text-3xl font-semibold my-5 mx-10">
+        <Text className="text-gray-900 text-3xl font-semibold mb-5 mx-7">
           Done!
         </Text>
         <Pressable
@@ -89,16 +91,18 @@ const MeditationSummary = () => {
               params: { fromSummary: true },
             });
           }}
+          className="mx-2"
         >
           <MeditationActivityWidget
             id={id}
             date={date}
             duration={duration}
             mood={moodFigure !== null ? `${moodFigure.toFixed(0)}%` : "--"}
+            moodFigure={moodFigure}
           />
         </Pressable>
 
-        <View className="flex-row pt-5 pb-2 relative justify-between mx-10">
+        <View className="flex-row pt-5 pb-2 relative justify-between mx-5">
           <Text className="font-semibold text-2xl left-0">Stats</Text>
           <Pressable
             className="right-0 py-1"
@@ -112,14 +116,14 @@ const MeditationSummary = () => {
           </Pressable>
         </View>
 
-        <View className="flex-row justify-center pb-10">
+        <View className="flex-row justify-center pb-5">
           <ActivityFrame
             title="Mood"
             icon={
               <Feather
-                name="arrow-up-circle"
+                name={getMoodIcon(moodFigure)}
                 size={28}
-                color={colors.green[500]}
+                color={getMoodIconColor(moodFigure)}
               />
             }
             amount={moodFigure !== null ? `${moodFigure.toFixed(0)}%` : "--"}

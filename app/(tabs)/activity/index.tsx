@@ -14,6 +14,8 @@ import {
   getAllBreaths,
   getMeditations,
   getMoodFigureTimeRange,
+  getMoodIcon,
+  getMoodIconColor,
 } from "@/storage";
 import colors from "tailwindcss/colors";
 import MeditationActivityWidget from "@/components/MeditationActivityWidget";
@@ -90,6 +92,7 @@ const ActivityScreen = () => {
         mood={
           item.moodFigure !== null ? `${item.moodFigure.toFixed(0)}%` : "--"
         }
+        moodFigure={item.moodFigure}
       />
     </Pressable>
   );
@@ -105,21 +108,21 @@ const ActivityScreen = () => {
   );
 
   return (
-    <View className="flex-1 bg-gray-200">
-      <SafeAreaView className="flex-1">
-        <ScrollView>
-          <Text className="text-gray-900 text-3xl font-semibold my-5 mx-10">
+    <SafeAreaView className="flex-1 bg-gray-200">
+      <ScrollView>
+        <View className="mt-1">
+          {/* <Text className="text-gray-900 text-3xl font-semibold my-5 mx-10">
             Activity
-          </Text>
+          </Text> */}
           {/* Activity Overview Section */}
           <View className="flex-row flex-wrap justify-center mb-5">
             <ActivityFrame
               title="Mood"
               icon={
                 <Feather
-                  name="arrow-up-circle"
+                  name={getMoodIcon(moodFigure)}
                   size={28}
-                  color={colors.green[500]}
+                  color={getMoodIconColor(moodFigure)}
                 />
               }
               amount={moodFigure !== null ? `${moodFigure.toFixed(0)}%` : "--"}
@@ -153,7 +156,7 @@ const ActivityScreen = () => {
 
           {/* Recent Meditations Section */}
           <View>
-            <View className="flex-row pt-5 pb-2 relative justify-between mx-10">
+            <View className="flex-row pt-5 pb-2 relative justify-between mx-7">
               <Text className="font-semibold text-2xl">Recent</Text>
               <Pressable
                 onPress={() => {
@@ -178,9 +181,9 @@ const ActivityScreen = () => {
               nestedScrollEnabled // Allow the FlatList to scroll within the ScrollView
             />
           </View>
-        </ScrollView>
-      </SafeAreaView>
-    </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 

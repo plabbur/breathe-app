@@ -17,6 +17,7 @@ const MoodActivity = () => {
           flexDirection: "row",
           alignItems: "center",
           marginBottom: 0,
+          marginTop: -20,
           zIndex: 10, // Ensure the button is above overlapping elements
         }}
         onPress={() => {
@@ -44,7 +45,7 @@ const MoodActivity = () => {
   return (
     <View className="flex-1 bg-gray-200">
       <SafeAreaView className="flex-1">
-        <View style={{ marginTop: -20 }}>{renderBackButton()}</View>
+        {/* {fromSummary && renderBackButton()} */}
 
         <View className=" mx-5">
           <Text className="text-gray-900 text-3xl font-semibold my-5 mx-5">

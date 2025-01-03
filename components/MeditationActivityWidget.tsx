@@ -4,12 +4,23 @@ import React from "react";
 import Feather from "@expo/vector-icons/Feather";
 import colors from "tailwindcss/colors";
 
-import { formatDuration, formatDate } from "@/storage";
+import {
+  formatDuration,
+  formatDate,
+  getMoodIcon,
+  getMoodIconColor,
+} from "@/storage";
 import { router } from "expo-router";
 
-export default function MeditationActivityWidget({ id, date, duration, mood }) {
+export default function MeditationActivityWidget({
+  id,
+  date,
+  duration,
+  mood,
+  moodFigure,
+}) {
   return (
-    <View className="bg-white rounded-3xl shadow-md p-4 min-w-[200px] m-2 mx-7">
+    <View className="bg-white rounded-3xl shadow-md p-4 min-w-[200px] m-2">
       <Text className="text-gray-400 text-sm">{formatDate(date)}</Text>
       <View className="bg-white h-[0.5] my-2" />
 
@@ -20,7 +31,11 @@ export default function MeditationActivityWidget({ id, date, duration, mood }) {
         </Text>
       </View>
       <View className="flex-row items-center">
-        <Feather name="arrow-up-circle" size={26} color={colors.green[500]} />
+        <Feather
+          name={getMoodIcon(moodFigure)}
+          size={26}
+          color={getMoodIconColor(moodFigure)}
+        />
         <Text className="text-gray-900 font-medium px-2 text-lg">{mood}</Text>
       </View>
     </View>

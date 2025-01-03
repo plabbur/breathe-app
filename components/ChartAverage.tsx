@@ -13,6 +13,8 @@ import {
   getThisWeekAverages,
   getThisYearAverages,
   getMoodFigureTimeRange,
+  getMoodIcon,
+  getMoodIconColor,
 } from "@/storage";
 import colors from "tailwindcss/colors";
 import { Feather } from "@expo/vector-icons";
@@ -237,6 +239,7 @@ const ChartAverage = () => {
             borderRadius: 10,
             marginBottom: 2,
             position: "absolute",
+            zIndex: item.avgMoodAfter < item.avgMoodBefore ? 10 : 0,
           }}
         />
 
@@ -246,6 +249,7 @@ const ChartAverage = () => {
             width: INCREMENT_WIDTH,
             backgroundColor: colors.green[500],
             borderRadius: 10,
+            zIndex: item.avgMoodBefore < item.avgMoodAfter ? 10 : 0,
           }}
         />
       </View>
@@ -349,33 +353,35 @@ const ChartAverage = () => {
   };
 
   return (
-    <ScrollView>
-      <View className="bg-white shadow-2xl rounded-3xl p-5">
-        <FlatList
-          data={filters}
-          renderItem={renderFilterButton}
-          horizontal={true}
-        />
-        <View className="my-5">{renderGraph()}</View>
-        <View>
-          <View className="flex-row items-center pb-1">
-            <View className="w-2 h-2 bg-green-500 rounded-full mr-1" />
-            <Text className="text-xs text-gray-400">{`${getAverageText()} average (Before meditation)`}</Text>
-          </View>
-          <View className="flex-row items-center">
-            <View className="w-2 h-2 bg-green-300 rounded-full mr-1" />
-            <Text className="text-xs text-gray-400">{`${getAverageText()} average (After meditating)`}</Text>
-          </View>
+    <View className="bg-white shadow-2xl rounded-3xl p-5">
+      <FlatList
+        data={filters}
+        renderItem={renderFilterButton}
+        horizontal={true}
+      />
+      <View className="my-5">{renderGraph()}</View>
+      <View>
+        <View className="flex-row items-center pb-1">
+          <View className="w-2 h-2 bg-green-500 rounded-full mr-1" />
+          <Text className="text-xs text-gray-400">{`${getAverageText()} average (Before meditation)`}</Text>
         </View>
-        <View className="h-[0.5] bg-gray-400 my-4" />
         <View className="flex-row items-center">
-          <Feather name="arrow-up-circle" size={30} color={colors.green[500]} />
-          <Text className="text-gray-900 font-medium px-2 text-2xl">
-            {moodFigure}%
-          </Text>
+          <View className="w-2 h-2 bg-green-300 rounded-full mr-1" />
+          <Text className="text-xs text-gray-400">{`${getAverageText()} average (After meditating)`}</Text>
         </View>
       </View>
-    </ScrollView>
+      <View className="h-[0.5] bg-gray-400 my-4" />
+      <View className="flex-row items-center">
+        <Feather
+          name={getMoodIcon(moodFigure)}
+          size={30}
+          color={getMoodIconColor(moodFigure)}
+        />
+        <Text className="text-gray-900 font-medium px-2 text-2xl">
+          {moodFigure}%
+        </Text>
+      </View>
+    </View>
   );
 };
 

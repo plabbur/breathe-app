@@ -66,8 +66,8 @@ const CalendarWidget = () => {
   };
 
   return (
-    <View className="bg-white shadow-lg rounded-3xl mx-7">
-      <View className="mx-2 p-5">
+    <View className="bg-white shadow-lg rounded-3xl mx-5">
+      <View className="p-5">
         <Calendar
           disableMonthChange={true}
           markedDates={markedDays}
