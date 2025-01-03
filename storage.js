@@ -8,7 +8,7 @@ const MEDITATIONS_KEY = 'meditations';
 import { Feather } from '@expo/vector-icons';
 import colors from 'tailwindcss/colors';
 
-class Meditation {
+export class Meditation {
     constructor(id, moodBefore, entryBefore, date, moodAfter = null, entryAfter = null, duration = null, breathCount = null, moodFigure = 0) {
         this.id = id;
         this.moodBefore = moodBefore;

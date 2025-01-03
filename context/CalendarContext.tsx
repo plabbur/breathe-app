@@ -10,7 +10,7 @@ const CalendarContext = createContext<CalendarContextType>({
   handleScrollToDay: () => {},
 });
 
-export const CalendarProvider: React.FC = ({ children }) => {
+export const CalendarProvider = ({ children }: { children: any }) => {
   const calendarRef = useRef(null);
 
   const handleScrollToDay = () => {

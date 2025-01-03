@@ -58,17 +58,6 @@ const Options = () => {
               path="alarm_options"
               bottom={false}
             />
-            <MenuItem icon="settings" label="Setting" path="" bottom={true} />
-          </View>
-        </View>
-
-        <View className="mt-8">
-          <Text className="font-semibold text-gray-400 mx-8 mb-3">
-            Preferences
-          </Text>
-          <View className="rounded-2xl bg-white mx-5 shadow-2xl">
-            <MenuItem icon="settings" label="Setting" path="" bottom={false} />
-            <MenuItem icon="settings" label="Setting" path="" bottom={false} />
           </View>
         </View>
       </ScrollView>

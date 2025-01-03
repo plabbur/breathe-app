@@ -1,3 +1,4 @@
+import { Meditation } from "@/storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createContext, useContext, ReactNode } from "react";
 
@@ -10,7 +11,7 @@ export const MeditationProvider = ({ children }: { children: ReactNode }) => {
     try {
       const data = await AsyncStorage.getItem("meditations");
       const meditations = data ? JSON.parse(data) : [];
-      const meditation = meditations.find((item) => item.id === id);
+      const meditation = meditations.find((item: Meditation) => item.id === id);
       console.log("Meditation with ID:", id, meditation);
       return meditation;
     } catch (error) {

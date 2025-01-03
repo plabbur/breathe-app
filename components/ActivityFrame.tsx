@@ -1,8 +1,23 @@
 import { View, Text, TouchableOpacity } from "react-native";
-import React from "react";
+import React, { ReactNode } from "react";
 import { router } from "expo-router";
+import { UUIDTypes } from "uuid";
 
-const ActivityFrame = ({ title, icon, amount, active, fromSummary, id }) => {
+const ActivityFrame = ({
+  title,
+  icon,
+  amount,
+  active,
+  fromSummary,
+  id,
+}: {
+  title: string;
+  icon: ReactNode;
+  amount: any;
+  active: boolean;
+  fromSummary: boolean;
+  id: UUIDTypes;
+}) => {
   return (
     <TouchableOpacity
       onPress={() => {

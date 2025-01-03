@@ -34,7 +34,7 @@ export const SettingsContext = createContext<SettingsContextType>({
 });
 
 // Provide Context
-export const SettingsProvider = ({ children }) => {
+export const SettingsProvider = ({ children }: { children: any }) => {
   const [instructorValue, setInstructorValue] = useState(1);
   const [instructorEnabled, setInstructorEnabled] = useState(true);
 
@@ -62,14 +62,13 @@ export const SettingsProvider = ({ children }) => {
   const alarm: AlarmSettings = {
     value: alarmValue,
     updateValue: updateAlarmValue,
-
-  }
+  };
 
   return (
     <SettingsContext.Provider
       value={{
         instructor,
-        alarm
+        alarm,
       }}
     >
       {children}

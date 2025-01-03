@@ -44,7 +44,7 @@ const Meditation = () => {
 
   const [revealAlarm, setRevealAlarm] = useState(false);
 
-  const handlePauseToggle = (pauseState) => {
+  const handlePauseToggle = (pauseState: boolean) => {
     setIsPaused(pauseState);
     setMeditating(!pauseState);
   };
@@ -128,8 +128,8 @@ const Meditation = () => {
       if (!alarmSound) {
         console.log("Alarm sound not initialized. Initializing now...");
         const sound = await initializeSound();
-        await sound.setIsLoopingAsync(true); // Enable looping
-        await sound.playAsync();
+        await sound?.setIsLoopingAsync(true); // Enable looping
+        await sound?.playAsync();
         setAlarmSound(sound); // Save the sound instance for stopping later
       } else {
         const status = await alarmSound.getStatusAsync();
@@ -139,8 +139,8 @@ const Meditation = () => {
         } else if (!status.isLoaded) {
           console.log("Sound not loaded. Reloading...");
           const sound = await initializeSound();
-          await sound.setIsLoopingAsync(true); // Enable looping
-          await sound.playAsync();
+          await sound?.setIsLoopingAsync(true); // Enable looping
+          await sound?.playAsync();
           setAlarmSound(sound); // Save the sound instance
         }
       }

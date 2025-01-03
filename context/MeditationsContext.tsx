@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { getMeditations, removeMeditation } from "@/storage";
 import { EventEmitter } from "eventemitter3";
+import { UUIDTypes } from "uuid";
 
 // Create the event emitter
 const eventEmitter = new EventEmitter();
@@ -8,10 +9,8 @@ const eventEmitter = new EventEmitter();
 // Create the context
 const MeditationsContext = createContext();
 
-
-
 // Provider component
-export const MeditationsProvider = ({ children }) => {
+export const MeditationsProvider = ({ children }: { children: any }) => {
   const [meditations, setMeditations] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -29,7 +28,7 @@ export const MeditationsProvider = ({ children }) => {
   };
 
   // Delete a meditation
-  const deleteMeditation = async (id) => {
+  const deleteMeditation = async (id: UUIDTypes) => {
     try {
       await removeMeditation(id);
       await fetchMeditations(); // Refresh the meditations list

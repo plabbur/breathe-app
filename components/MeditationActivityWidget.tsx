@@ -11,6 +11,7 @@ import {
   getMoodIconColor,
 } from "@/storage";
 import { router } from "expo-router";
+import { UUIDTypes } from "uuid";
 
 export default function MeditationActivityWidget({
   id,
@@ -18,6 +19,12 @@ export default function MeditationActivityWidget({
   duration,
   mood,
   moodFigure,
+}: {
+  id: UUIDTypes;
+  date: Date;
+  duration: number;
+  mood: number;
+  moodFigure: number;
 }) {
   return (
     <View className="bg-white rounded-3xl shadow-md p-4 min-w-[200px] m-2">

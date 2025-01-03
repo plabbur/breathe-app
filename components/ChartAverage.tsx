@@ -15,6 +15,7 @@ import {
   getMoodFigureTimeRange,
   getMoodIcon,
   getMoodIconColor,
+  Meditation,
 } from "@/storage";
 import colors from "tailwindcss/colors";
 import { Feather } from "@expo/vector-icons";
@@ -23,10 +24,10 @@ import { Feather } from "@expo/vector-icons";
 const ChartAverage = () => {
   const [averages, setAverages] = useState([]);
 
-  const [allTimeAverages, setAllTimeAverages] = useState([]);
-  const [thisWeekAverages, setThisWeekAverages] = useState([]);
-  const [thisMonthAverages, setThisMonthAverages] = useState([]);
-  const [thisYearAverages, setThisYearAverages] = useState([]);
+  const [allTimeAverages, setAllTimeAverages] = useState<any>([]);
+  const [thisWeekAverages, setThisWeekAverages] = useState<any>([]);
+  const [thisMonthAverages, setThisMonthAverages] = useState<any>([]);
+  const [thisYearAverages, setThisYearAverages] = useState<any>([]);
 
   const [moodFigure, setMoodFigure] = useState(0);
 
@@ -63,15 +64,15 @@ const ChartAverage = () => {
       return moodFig !== null ? moodFig : null;
     };
 
-    const moodFigureThisWeek = await getMoodFig("This week");
-    const moodFigureThisMonth = await getMoodFig("This month");
-    const moodFigureThisYear = await getMoodFig("This year");
-    const moodFigureAllTime = await getMoodFig("All time");
+    const moodFigureThisWeek: any = await getMoodFig("This week");
+    const moodFigureThisMonth: any = await getMoodFig("This month");
+    const moodFigureThisYear: any = await getMoodFig("This year");
+    const moodFigureAllTime: any = await getMoodFig("All time");
 
     if (item === "This week") {
       setNumBars(7);
       setBarMargin(10);
-      setMoodFigure(moodFigureThisWeek?.toFixed(0));
+      setMoodFigure(moodFigureThisWeek.toFixed(0));
     } else if (item === "This month") {
       const today = new Date();
       setNumBars(DAYS_IN_MONTHS[today.getMonth()]);
@@ -90,7 +91,7 @@ const ChartAverage = () => {
     setFilterRange(item);
   };
 
-  const getDateRange = (toFilter) => {
+  const getDateRange = (toFilter: string) => {
     const today = new Date();
 
     switch (toFilter) {
@@ -126,6 +127,9 @@ const ChartAverage = () => {
       case "All time": {
         return [new Date(0, 0, 0), new Date()];
       }
+      default: {
+        return [new Date(0, 0, 0), new Date()];
+      }
     }
   };
 
@@ -135,7 +139,7 @@ const ChartAverage = () => {
         const meditations = await getMeditations();
 
         // Transform the array into the required object structure
-        const formattedData = meditations.map((item, index) => ({
+        const formattedData = meditations.map((item: Meditation) => ({
           //   id: String(index), // Use a string id for FlatList
           date: new Date(item.date) || "",
           moodBefore: item.moodBefore || 0,
@@ -220,7 +224,7 @@ const ChartAverage = () => {
     );
   };
 
-  const renderBar = ({ item }) => {
+  const renderBar = ({ item }: { item: any }) => {
     return (
       <View
         style={{
@@ -319,7 +323,7 @@ const ChartAverage = () => {
   const renderGraph = () => {
     return (
       <View>
-        <View class="relative">
+        <View className="relative">
           <View>{renderChartLines(INCREMENT_HEIGHT)}</View>
           <View
             style={{ flexDirection: "row", justifyContent: "center" }}

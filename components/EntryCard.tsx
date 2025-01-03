@@ -2,7 +2,15 @@ import { View, Text, Pressable } from "react-native";
 import React from "react";
 import { router } from "expo-router";
 
-const EntryCard = ({ title, mood, entry }) => {
+const EntryCard = ({
+  title,
+  mood,
+  entry,
+}: {
+  title: string;
+  mood: number;
+  entry: string;
+}) => {
   const emojis = ["😔", "😕", "😐", "🙂", "😁"];
 
   return (
