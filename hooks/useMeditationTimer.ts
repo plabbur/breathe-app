@@ -3,7 +3,7 @@ import { TimerContext } from "@/context/TimerContext";
 import { router } from "expo-router";
 import { updateMeditationDuration } from "@/storage";
 
-export function useMeditationTimer(id) {
+export function useMeditationTimer(id: any) {
   const { duration, setDuration } = useContext(TimerContext);
   const [countdown, setCountdown] = useState(3);
   const [isMeditating, setMeditating] = useState(false);

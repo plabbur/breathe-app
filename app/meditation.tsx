@@ -24,9 +24,6 @@ const Meditation = () => {
   const { id } = useLocalSearchParams(); // Extract the id from the route parameters
   const { instructor, alarm, eventEmitter } = useSettings();
 
-  // const [countdown, setCountdown] = useState(3);
-  // const { duration: duration, setDuration } = useContext(TimerContext);
-
   const { alarmDate: alarmDate, setAlarmDate } = useContext(AlarmContext);
   const [alarmSound, setAlarmSound] = useState<Audio.Sound>();
   const [playingAlarm, setPlayingAlarm] = useState(false);
@@ -36,9 +33,6 @@ const Meditation = () => {
   const [inhaleSound, setInhaleSound] = useState<Audio.Sound>();
   const [holdSound, setHoldSound] = useState<Audio.Sound>();
   const [exhaleSound, setExhaleSound] = useState<Audio.Sound>();
-
-  // const [isMeditating, setMeditating] = useState(false);
-  // const [breatheState, setBreatheState] = useState("Inhale");
 
   const {
     countdown,
@@ -55,13 +49,6 @@ const Meditation = () => {
   } = useMeditationTimer(id);
 
   let timerId: NodeJS.Timeout;
-
-  // const [isPaused, setIsPaused] = useState(false);
-
-  // const handlePauseToggle = (pauseState: boolean) => {
-  //   setIsPaused(pauseState);
-  //   setMeditating(!pauseState);
-  // };
 
   const handleAlarmToggle = () => {
     setIsPaused(true);
@@ -120,17 +107,6 @@ const Meditation = () => {
 
     configureAudio();
   }, []);
-
-  // const handleEnd = () => {
-  //   setMeditating(false);
-  //   updateMeditationDuration(id, duration);
-  //   setAlarmDate(null);
-  //   setDuration(0);
-  //   router.push({
-  //     pathname: "/(modal)/post-checkup",
-  //     params: { id: id }, // Pass the id as a query parameter
-  //   });
-  // };
 
   const setupSound = async () => {
     if (alarmSound) {
@@ -271,23 +247,6 @@ const Meditation = () => {
     initializeInstructor();
   }, []);
 
-  // useEffect(() => {
-  //   setAlarmDate(null);
-  //   if (countdown > 0) {
-  //     const timerId = setTimeout(() => {
-  //       setCountdown(countdown - 1);
-  //     }, 1000);
-
-  //     // Cleanup the timer when the component unmounts or countdown changes
-  //     return () => clearTimeout(timerId);
-  //   }
-
-  //   if (countdown === 0) {
-  //     setDuration(0);
-  //     setMeditating(true);
-  //   }
-  // }, [countdown]);
-
   useEffect(() => {
     // Update the currentDate every second
     const intervalId = setInterval(() => {
@@ -304,21 +263,6 @@ const Meditation = () => {
       setPlayingAlarm(true);
     }
   }, [currentDate, alarmDate, playingAlarm]); // Ensure playingAlarm is included as a dependency
-
-  // useEffect(() => {
-  //   if (isMeditating) {
-  //     const intervalId = setInterval(() => {
-  //       setDuration((prevDuration) => {
-  //         return prevDuration + 1;
-  //       });
-  //     }, 1000);
-
-  //     return () => {
-  //       clearInterval(intervalId);
-  //       clearTimeout(intervalId);
-  //     };
-  //   }
-  // }, [isMeditating]);
 
   const renderAlarmPopup = () => {
     return (
