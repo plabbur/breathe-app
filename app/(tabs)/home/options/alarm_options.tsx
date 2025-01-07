@@ -2,7 +2,7 @@ import { View, Text, Pressable, SafeAreaView, ScrollView } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useSettings } from "@/context/SettingsContext";
 import { Audio } from "expo-av";
-import { ALARM_DATA, AUDIO_FILES } from "@/constants/AlarmData";
+import { ALARM_DATA, ALARM_AUDIO_FILES } from "@/constants/AlarmData";
 import colors from "tailwindcss/colors";
 import { Feather } from "@expo/vector-icons";
 import { toTitleCase } from "@/storage";
@@ -48,7 +48,7 @@ const ChooseAlarm = () => {
       // Initialize a new sound instance
       const audioFileName = ALARM_DATA[alarmID - 1].audio;
       const { sound } = await Audio.Sound.createAsync(
-        AUDIO_FILES[audioFileName]
+        ALARM_AUDIO_FILES[audioFileName]
       );
 
       // Play the new sound and store it in state

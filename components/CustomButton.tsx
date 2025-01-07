@@ -1,6 +1,7 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import React from "react";
 import Colors from "@/constants/Colors";
+import colors from "tailwindcss/colors";
 
 interface CustomButtonProps {
   onPress: () => void;

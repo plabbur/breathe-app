@@ -4,14 +4,34 @@ import { Feather } from "@expo/vector-icons";
 import { useSettings } from "@/context/SettingsContext";
 import colors from "tailwindcss/colors";
 
-const Toggle = ({ icon, label, state, onChange, bottom }) => {
+interface Toggle {
+  icon: any;
+  label: string;
+  state: boolean;
+  onChange: {};
+  bottom: boolean;
+  hideIcon: boolean;
+}
+
+const Toggle: React.FC<Toggle> = ({
+  icon,
+  label,
+  state,
+  onChange,
+  bottom,
+  hideIcon,
+}) => {
   return (
     <View>
       <View className="mx-5 py-8">
         <View className="flex-1 justify-center">
           <View className="flex-row absolute left-0 items-center">
-            <Feather name={icon} size={28} color={colors.gray[400]} />
-            <Text className="px-4 text-base text-gray-900">{label}</Text>
+            {!hideIcon && (
+              <View className="pr-4">
+                <Feather name={icon} size={28} color={colors.gray[400]} />
+              </View>
+            )}
+            <Text className="text-base text-gray-900">{label}</Text>
           </View>
 
           <View className="absolute right-0">

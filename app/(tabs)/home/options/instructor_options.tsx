@@ -7,7 +7,10 @@ import {
   ScrollView,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { AUDIO_FILES, VOICE_DATA } from "@/constants/VoiceData";
+import {
+  INSTRUCTOR_AUDIO_FILES,
+  INSTRUCTOR_DATA,
+} from "@/constants/InstructorData";
 import colors from "tailwindcss/colors";
 import { Feather, Ionicons, AntDesign } from "@expo/vector-icons";
 import { useSettings } from "@/context/SettingsContext";
@@ -54,9 +57,9 @@ const ChooseVoice = () => {
       }
 
       // Initialize a new sound instance
-      const audioFileName = VOICE_DATA[instructorID - 1].inhale;
+      const audioFileName = INSTRUCTOR_DATA[instructorID - 1].inhale;
       const { sound } = await Audio.Sound.createAsync(
-        AUDIO_FILES[audioFileName]
+        INSTRUCTOR_AUDIO_FILES[audioFileName]
       );
 
       // Play the new sound and store it in state
@@ -87,7 +90,7 @@ const ChooseVoice = () => {
           <View className="flex-1 justify-center">
             <View className="absolute left-0 items-center">
               <Text className="text-base text-gray-900">
-                {toTitleCase(VOICE_DATA[instructorID - 1].name)}
+                {toTitleCase(INSTRUCTOR_DATA[instructorID - 1].name)}
               </Text>
             </View>
 
@@ -106,15 +109,19 @@ const ChooseVoice = () => {
   return (
     <SafeAreaView className="flex-1 bg-gray-200">
       <ScrollView>
-        <View className="rounded-2xl bg-white mx-5 shadow-2xl mt-5">
+        <Text className="font-semibold text-gray-400 mx-8 mb-3">
+          Preferences
+        </Text>
+        <View className="rounded-2xl bg-white mx-5 shadow-2xl">
           <Toggle
-            icon="volume-2"
+            icon=""
             label="Instructor"
             state={instructor.isEnabled}
             onChange={() => {
               instructor.toggleEnabled(!instructor.isEnabled);
             }}
             bottom={false}
+            hideIcon={true}
           />
         </View>
         <View

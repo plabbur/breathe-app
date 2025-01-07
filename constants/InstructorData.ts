@@ -1,4 +1,4 @@
-export interface VoiceType {
+export interface InstructorType {
     id: number;
     name: string;
     inhale: string;
@@ -6,7 +6,7 @@ export interface VoiceType {
     exhale: string;
 }
 
-export const VOICE_DATA: VoiceType[] = [
+export const INSTRUCTOR_DATA: InstructorType[] = [
     {   id: 1,
         name: "adam",
         inhale: "adam_inhale.mp3",
@@ -33,7 +33,7 @@ export const VOICE_DATA: VoiceType[] = [
     },
 ]
 
-export const AUDIO_FILES: {[key: string]: any} = {
+export const INSTRUCTOR_AUDIO_FILES: {[key: string]: any} = {
     "adam_inhale.mp3": require("@/assets/audio/meditation_instructions/adam_inhale.mp3"),
     "adam_hold.mp3": require("@/assets/audio/meditation_instructions/adam_hold.mp3"),
     "adam_exhale.mp3": require("@/assets/audio/meditation_instructions/adam_exhale.mp3"),

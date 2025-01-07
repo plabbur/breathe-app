@@ -41,7 +41,7 @@ const OptionsLayout = () => {
         }}
       />
 
-      <Stack.Screen
+      {/* <Stack.Screen
         name="alarm_options"
         options={{
           headerShown: true,
@@ -57,7 +57,7 @@ const OptionsLayout = () => {
             color: colors.gray[900],
           },
         }}
-      />
+      /> */}
     </Stack>
   );
 };

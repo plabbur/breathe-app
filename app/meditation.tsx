@@ -5,23 +5,27 @@ import { router, useLocalSearchParams } from "expo-router";
 import { TimerContext } from "@/context/TimerContext";
 import ControlBar from "@/components/ControlBar";
 import { LinearGradient } from "expo-linear-gradient";
-import TimerProvider from "@/context/TimerContext";
 import { Audio } from "expo-av";
 import { updateMeditationDuration } from "@/storage";
 import { AlarmContext, useAlarm } from "@/context/AlarmContext";
-import { AUDIO_FILES, VOICE_DATA } from "@/constants/VoiceData";
-import { SettingsContext, useSettings } from "@/context/SettingsContext";
+import {
+  INSTRUCTOR_AUDIO_FILES,
+  INSTRUCTOR_DATA,
+} from "@/constants/InstructorData";
+import { useSettings } from "@/context/SettingsContext";
+import { ALARM_AUDIO_FILES, ALARM_DATA } from "@/constants/AlarmData";
+import CountdownView from "@/components/CountdownView";
+
+import MeditationConfiguration from "@/constants/MeditationConfiguration";
+import formatDuration from "@/utils/formatting/formatDuration";
+import { useMeditationTimer } from "@/hooks/useMeditationTimer";
 
 const Meditation = () => {
   const { id } = useLocalSearchParams(); // Extract the id from the route parameters
-  const { instructor } = useContext(SettingsContext);
+  const { instructor, alarm, eventEmitter } = useSettings();
 
-  const TIME_INHALE = 4;
-  const TIME_HOLD = 7;
-  const TIME_EXHALE = 8;
-
-  const [countdown, setCountdown] = useState(3);
-  const { duration: duration, setDuration } = useContext(TimerContext);
+  // const [countdown, setCountdown] = useState(3);
+  // const { duration: duration, setDuration } = useContext(TimerContext);
 
   const { alarmDate: alarmDate, setAlarmDate } = useContext(AlarmContext);
   const [alarmSound, setAlarmSound] = useState<Audio.Sound>();
@@ -33,21 +37,31 @@ const Meditation = () => {
   const [holdSound, setHoldSound] = useState<Audio.Sound>();
   const [exhaleSound, setExhaleSound] = useState<Audio.Sound>();
 
-  const [isMeditating, setMeditating] = useState(false);
-  const [breatheState, setBreatheState] = useState("Inhale");
+  // const [isMeditating, setMeditating] = useState(false);
+  // const [breatheState, setBreatheState] = useState("Inhale");
+
+  const {
+    countdown,
+    isMeditating,
+    setMeditating,
+    isPaused,
+    setIsPaused,
+    breatheState,
+    setBreatheState,
+    duration,
+    handlePauseToggle,
+    handleEnd,
+    startMeditation,
+  } = useMeditationTimer(id);
 
   let timerId: NodeJS.Timeout;
 
-  const { resumeMeditation } = useLocalSearchParams();
+  // const [isPaused, setIsPaused] = useState(false);
 
-  const [isPaused, setIsPaused] = useState(false);
-
-  const [revealAlarm, setRevealAlarm] = useState(false);
-
-  const handlePauseToggle = (pauseState: boolean) => {
-    setIsPaused(pauseState);
-    setMeditating(!pauseState);
-  };
+  // const handlePauseToggle = (pauseState: boolean) => {
+  //   setIsPaused(pauseState);
+  //   setMeditating(!pauseState);
+  // };
 
   const handleAlarmToggle = () => {
     setIsPaused(true);
@@ -64,6 +78,13 @@ const Meditation = () => {
     setOnAlarmDelete(resetMeditation); // Register callback
     return () => setOnAlarmDelete(() => {}); // Cleanup on unmount
   }, []);
+
+  useEffect(() => {
+    if (alarmDate) {
+      setPlayingAlarm(false); // Reset playingAlarm when a new alarm is set
+      setupSound(); // Reinitialize sound with the updated settings
+    }
+  }, [alarmDate]);
 
   useEffect(() => {
     if (isMeditating === false && alarmDate) {
@@ -100,26 +121,27 @@ const Meditation = () => {
     configureAudio();
   }, []);
 
-  const handleEnd = () => {
-    setMeditating(false);
-    updateMeditationDuration(id, duration);
-    setAlarmDate(null);
-    setDuration(0);
-    router.push({
-      pathname: "/(modal)/post-checkup",
-      params: { id: id }, // Pass the id as a query parameter
-    });
+  // const handleEnd = () => {
+  //   setMeditating(false);
+  //   updateMeditationDuration(id, duration);
+  //   setAlarmDate(null);
+  //   setDuration(0);
+  //   router.push({
+  //     pathname: "/(modal)/post-checkup",
+  //     params: { id: id }, // Pass the id as a query parameter
+  //   });
+  // };
+
+  const setupSound = async () => {
+    if (alarmSound) {
+      await alarmSound.stopAsync();
+      await alarmSound.unloadAsync(); // Unload the old sound
+    }
+    const sound = await initializeSound();
+    setAlarmSound(sound); // Save the new sound instance
   };
 
   useEffect(() => {
-    const setupSound = async () => {
-      const sound = await initializeSound();
-      setAlarmSound(sound);
-      if (instructor.isEnabled) {
-        initializeInstructor();
-      }
-    };
-
     setupSound();
   }, []);
 
@@ -153,41 +175,62 @@ const Meditation = () => {
   const initializeSound = async () => {
     try {
       console.log("Initializing alarm...");
+      const alarmAudioFileName = ALARM_DATA[alarm.value - 1].audio;
+
       const { sound } = await Audio.Sound.createAsync(
-        require("@/assets/audio/alarm.mp3") // Ensure this path is correct
+        ALARM_AUDIO_FILES[alarmAudioFileName]
       );
-      console.log("Alarm initialized.");
+
+      console.log("Alarm initialized with sound:", alarmAudioFileName);
       return sound;
     } catch (error) {
       console.error("Failed to load alarm:", error);
     }
   };
 
+  useEffect(() => {
+    const handleAlarmUpdated = async () => {
+      console.log("Alarm updated, refreshing alarm sound...");
+      if (alarmSound) {
+        await alarmSound.stopAsync();
+        await alarmSound.unloadAsync(); // Unload the previous sound
+      }
+      const sound = await initializeSound();
+      setAlarmSound(sound); // Set the new alarm sound
+    };
+
+    eventEmitter.on("alarmUpdated", handleAlarmUpdated);
+
+    return () => {
+      eventEmitter.off("alarmUpdated", handleAlarmUpdated);
+    };
+  }, [alarmSound, eventEmitter]);
+
   const initializeInhaleSound = async () => {
-    const inhaleAudioFileName = VOICE_DATA[instructor.value - 1].inhale;
+    const inhaleAudioFileName = INSTRUCTOR_DATA[instructor.value - 1].inhale;
 
     const { sound } = await Audio.Sound.createAsync(
-      AUDIO_FILES[inhaleAudioFileName]
+      INSTRUCTOR_AUDIO_FILES[inhaleAudioFileName]
     );
 
     setInhaleSound(sound);
   };
 
   const initializeHoldSound = async () => {
-    const holdAudioFileName = VOICE_DATA[instructor.value - 1].hold;
+    const holdAudioFileName = INSTRUCTOR_DATA[instructor.value - 1].hold;
 
     const { sound } = await Audio.Sound.createAsync(
-      AUDIO_FILES[holdAudioFileName]
+      INSTRUCTOR_AUDIO_FILES[holdAudioFileName]
     );
 
     setHoldSound(sound);
   };
 
   const initializeExhaleSound = async () => {
-    const exhaleAudioFileName = VOICE_DATA[instructor.value - 1].exhale;
+    const exhaleAudioFileName = INSTRUCTOR_DATA[instructor.value - 1].exhale;
 
     const { sound } = await Audio.Sound.createAsync(
-      AUDIO_FILES[exhaleAudioFileName]
+      INSTRUCTOR_AUDIO_FILES[exhaleAudioFileName]
     );
 
     setExhaleSound(sound);
@@ -225,24 +268,25 @@ const Meditation = () => {
 
   useEffect(() => {
     initializeSound();
+    initializeInstructor();
   }, []);
 
-  useEffect(() => {
-    setAlarmDate(null);
-    if (countdown > 0) {
-      const timerId = setTimeout(() => {
-        setCountdown(countdown - 1);
-      }, 1000);
+  // useEffect(() => {
+  //   setAlarmDate(null);
+  //   if (countdown > 0) {
+  //     const timerId = setTimeout(() => {
+  //       setCountdown(countdown - 1);
+  //     }, 1000);
 
-      // Cleanup the timer when the component unmounts or countdown changes
-      return () => clearTimeout(timerId);
-    }
+  //     // Cleanup the timer when the component unmounts or countdown changes
+  //     return () => clearTimeout(timerId);
+  //   }
 
-    if (countdown === 0) {
-      setDuration(0);
-      setMeditating(true);
-    }
-  }, [countdown]);
+  //   if (countdown === 0) {
+  //     setDuration(0);
+  //     setMeditating(true);
+  //   }
+  // }, [countdown]);
 
   useEffect(() => {
     // Update the currentDate every second
@@ -259,29 +303,22 @@ const Meditation = () => {
       playAlarm();
       setPlayingAlarm(true);
     }
-  }, [currentDate, alarmDate]); // Trigger this effect whenever currentDate or alarmDate changes
+  }, [currentDate, alarmDate, playingAlarm]); // Ensure playingAlarm is included as a dependency
 
-  useEffect(() => {
-    if (isMeditating) {
-      const intervalId = setInterval(() => {
-        setDuration((prevDuration) => {
-          return prevDuration + 1;
-        });
-      }, 1000);
+  // useEffect(() => {
+  //   if (isMeditating) {
+  //     const intervalId = setInterval(() => {
+  //       setDuration((prevDuration) => {
+  //         return prevDuration + 1;
+  //       });
+  //     }, 1000);
 
-      return () => {
-        clearInterval(intervalId);
-        clearTimeout(intervalId);
-      };
-    }
-  }, [isMeditating]);
-
-  // Format the time left to ensure two digits are displayed
-  const formattedTimeHours = String(Math.floor((duration / (60 * 60)) % 60));
-  const formattedTimeMinutes = String(
-    Math.floor((duration / 60) % 60)
-  ).padStart(duration < 60 * 10 ? 1 : 2, "0");
-  const formattedTimeSeconds = String(duration % 60).padStart(2, "0");
+  //     return () => {
+  //       clearInterval(intervalId);
+  //       clearTimeout(intervalId);
+  //     };
+  //   }
+  // }, [isMeditating]);
 
   const renderAlarmPopup = () => {
     return (
@@ -289,10 +326,13 @@ const Meditation = () => {
         <Text className="text-white font-medium text-2xl my-5">Alarm</Text>
 
         <Pressable
-          onPress={() => {
-            setAlarmDate(null);
-            alarmSound?.stopAsync();
+          onPress={async () => {
+            if (alarmSound) {
+              await alarmSound.stopAsync(); // Stop the sound
+              await alarmSound.unloadAsync(); // Unload the sound
+            }
             setPlayingAlarm(false); // Reset alarm state
+            setAlarmDate(null); // Clear the alarm date to prevent retriggering
           }}
         >
           <View className="bg-green-500 px-16 py-3 rounded-full mx-15 mb-10">
@@ -303,7 +343,9 @@ const Meditation = () => {
     );
   };
 
-  if (countdown === 0) {
+  if (countdown !== 0) {
+    return <CountdownView countdown={countdown} />;
+  } else {
     return (
       <>
         {playingAlarm && renderAlarmPopup()}
@@ -324,45 +366,27 @@ const Meditation = () => {
 
             <BreathingCircle
               isActive={isMeditating}
-              timeInhale={TIME_INHALE}
-              timeHold={TIME_HOLD}
-              timeExhale={TIME_HOLD}
+              timeInhale={MeditationConfiguration.TIME_INHALE}
+              timeHold={MeditationConfiguration.TIME_HOLD}
+              timeExhale={MeditationConfiguration.TIME_EXHALE}
               toValueInhale={3}
               toValueExhale={1}
               initialSize={50}
               onBreatheStateChange={setBreatheState}
             />
             <ControlBar
-              currentTime={
-                duration < 60 * 60
-                  ? `${formattedTimeMinutes}:${formattedTimeSeconds}`
-                  : `${formattedTimeHours}:${formattedTimeMinutes}:${formattedTimeSeconds}`
-              }
+              currentTime={formatDuration(duration)}
               containerStyles="mb-5 shadow-xl"
-              isPaused={isPaused} // Pass state as prop
+              isPaused={isPaused}
               onPauseToggle={handlePauseToggle}
               onAlarmToggle={handleAlarmToggle}
               onAlarmSet={() => {
-                setMeditating(true); // Unpause meditation
+                setMeditating(true);
               }}
             />
           </SafeAreaView>
         </LinearGradient>
       </>
-    );
-  } else {
-    return (
-      <LinearGradient className="flex-1" colors={["#FFFFFF", "#B0FFE2"]}>
-        <SafeAreaView className="flex-1">
-          <View className="flex-1">
-            <SafeAreaView className="flex-1 items-center justify-between">
-              <Text className="text-2xl text-gray-500 my-10">{countdown}</Text>
-              <BreathingCircle isActive={false} initialSize={50} />
-              <View className="min-h-[62px] mb-5" />
-            </SafeAreaView>
-          </View>
-        </SafeAreaView>
-      </LinearGradient>
     );
   }
 };

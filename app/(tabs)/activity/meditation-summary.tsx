@@ -102,7 +102,7 @@ const MeditationSummary = () => {
           />
         </Pressable>
 
-        <View className="flex-row pt-5 pb-2 relative justify-between mx-5">
+        <View className="flex-row pt-5 pb-2 relative justify-between">
           <Text className="font-semibold text-2xl left-0">Stats</Text>
           <Pressable
             className="right-0 py-1"
@@ -116,7 +116,7 @@ const MeditationSummary = () => {
           </Pressable>
         </View>
 
-        <View className="flex-row justify-center pb-5">
+        <View className="flex-row justify-center pb-5 mx-5">
           <ActivityFrame
             title="Mood"
             icon={

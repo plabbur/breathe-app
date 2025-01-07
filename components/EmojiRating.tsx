@@ -66,8 +66,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   button: {
-    width: windowWidth / 5 - 14 * 2,
-    height: windowWidth / 5 - 14 * 2,
+    width: windowWidth / 5 - 23,
+    height: windowWidth / 5 - 23,
     backgroundColor: colors.white,
     shadowOpacity: 0.05,
     shadowRadius: 5,

@@ -4,10 +4,15 @@ import colors from "tailwindcss/colors";
 import { router, useLocalSearchParams } from "expo-router";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { AlarmContext } from "@/context/AlarmContext";
+import { MenuItemNav } from "@/components/MenuItemNav";
+import { useSettings } from "@/context/SettingsContext";
+import { ALARM_DATA } from "@/constants/AlarmData";
+import { toTitleCase } from "@/storage";
 
 const SetAlarm = () => {
   const { onAlarmSet } = useLocalSearchParams();
   const { setAlarmDate } = useContext(AlarmContext);
+  const { alarm } = useSettings();
 
   const handlePress = (alarmDate: Date) => {
     const date = alarmDate;
@@ -70,6 +75,16 @@ const SetAlarm = () => {
             is24Hour={true}
             display={Platform.OS === "ios" ? "spinner" : "default"}
             onChange={onChange}
+          />
+        </View>
+        <View className="rounded-2xl bg-white mx-5 shadow-2xl">
+          <MenuItemNav
+            icon=""
+            hideIcon={true}
+            label="Sound"
+            value={toTitleCase(ALARM_DATA[alarm.value - 1].name)}
+            path="(modal)/edit-alarm-audio"
+            bottom={true}
           />
         </View>
       </SafeAreaView>

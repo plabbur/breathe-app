@@ -5,6 +5,8 @@ import {
   FlatList,
   Pressable,
   ScrollView,
+  TouchableHighlight,
+  Alert,
 } from "react-native";
 import React, { useEffect, useState, useMemo } from "react";
 import ActivityFrame from "@/components/ActivityFrame";
@@ -21,6 +23,7 @@ import colors from "tailwindcss/colors";
 import MeditationActivityWidget from "@/components/MeditationActivityWidget";
 import { router } from "expo-router";
 import { useMeditations } from "@/context/MeditationsContext";
+import SwipeRow from "@nghinv/react-native-swipe-row";
 
 const ActivityScreen = () => {
   const [meditationCount, setMeditationCount] = useState(0);
@@ -28,7 +31,8 @@ const ActivityScreen = () => {
   const [moodFigure, setMoodFigure] = useState(0);
   const [meditationData, setMeditationData] = useState([]);
 
-  const { meditations, eventEmitter, fetchMeditations } = useMeditations();
+  const { meditations, eventEmitter, fetchMeditations, deleteMeditation } =
+    useMeditations();
 
   // Update screen data when a meditation is deleted
   useEffect(() => {
@@ -78,23 +82,65 @@ const ActivityScreen = () => {
     updateScreenData();
   }, []);
 
+  const handleDelete = async ({ id }) => {
+    Alert.alert(
+      "Confirm Delete",
+      "Are you sure you want to delete this meditation?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              deleteMeditation(id);
+              updateScreenData();
+            } catch (error) {
+              console.error("Error deleting meditation:", error);
+            }
+          },
+        },
+      ]
+    );
+  };
+
   // Render meditation activity widget
   const renderMeditationActivityWidget = ({ item }) => (
-    <Pressable
-      onPress={() => {
-        router.push(`/activity/${item.id}`);
-      }}
+    <SwipeRow
+      right={[
+        {
+          backgroundColor: "transparent",
+          icon: {
+            type: "Ionicons",
+            name: "trash",
+            style: { color: colors.red[500] },
+          },
+          onPress: () => {
+            handleDelete({ id: item.id });
+          },
+        },
+      ]}
+      style={{ marginVertical: 1 }}
     >
-      <MeditationActivityWidget
-        id={item.id}
-        date={item.date}
-        duration={item.duration}
-        mood={
-          item.moodFigure !== null ? `${item.moodFigure.toFixed(0)}%` : "--"
-        }
-        moodFigure={item.moodFigure}
-      />
-    </Pressable>
+      <Pressable
+        onPress={() => {
+          router.push(`/activity/${item.id}`);
+        }}
+      >
+        <MeditationActivityWidget
+          id={item.id}
+          date={item.date}
+          duration={item.duration}
+          mood={
+            item.moodFigure !== null ? `${item.moodFigure.toFixed(0)}%` : "--"
+          }
+          moodFigure={item.moodFigure}
+        />
+      </Pressable>
+    </SwipeRow>
   );
 
   // Memoize empty state to avoid unnecessary re-renders
@@ -115,7 +161,7 @@ const ActivityScreen = () => {
             Activity
           </Text> */}
           {/* Activity Overview Section */}
-          <View className="flex-row flex-wrap justify-center mb-5">
+          <View className="flex-row flex-wrap justify-center mb-5 mx-2">
             <ActivityFrame
               title="Mood"
               icon={

@@ -81,11 +81,14 @@ const MeditationsActivity = () => {
     </Pressable>
   );
 
+  
+
   return (
     <SafeAreaView className="flex-1 bg-gray-200">
       <ScrollView>
         <View className="flex-1 mt-2">
           <CalendarWidget />
+
 
           <View className="flex-row pt-5 pb-2 relative justify-between mx-7 mt-5">
             <Text className="font-semibold text-2xl left-0">Recent</Text>

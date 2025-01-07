@@ -8,8 +8,8 @@ const EntryCard = ({
   entry,
 }: {
   title: string;
-  mood: number;
-  entry: string;
+  mood: number | null;
+  entry: string | null;
 }) => {
   const emojis = ["😔", "😕", "😐", "🙂", "😁"];
 

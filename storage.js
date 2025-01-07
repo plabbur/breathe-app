@@ -96,7 +96,6 @@ export const newMeditation = async (id, moodBefore, entryBefore) => {
     meditations.push(newMeditation);
     await saveMeditations(meditations);
     console.log("pushed meditation: ", meditations);
-
 };
 
 export const updateMeditationEntry = async (id, moodAfter, entryAfter) => {
@@ -304,10 +303,82 @@ export const getDateYear = (date) => {
     return new Date(date).toLocaleDateString("en-US", options)
 }
 
+export const getAllTimeAverages = (firstDate, meditations) => {
+    const today = new Date();
+      
+    // Filter meditations that fall within this year
+    const allTimeMeditations = meditations.filter((item) => {
+      const medDate = new Date(item.date); // Ensure med.date is a Date object
+      return medDate >= firstDate && medDate <= today;
+    });
+  
+    // Initialize arrays for weekly data
+    const weeksInYear = 52;
+    let weeklyMoodsBefore = Array.from({ length: weeksInYear }, () => []);
+    let weeklyMoodsAfter = Array.from({ length: weeksInYear }, () => []);
+    let weeklyAveragesBefore = Array(weeksInYear).fill(0);
+    let weeklyAveragesAfter = Array(weeksInYear).fill(0);
+  
+    // Calculate the week number for each meditation and group them
+    for (let item of allTimeMeditations) {
+      const medDate = new Date(item.date);
+      const weekIndex = Math.floor(
+        (medDate - today) / (7 * 24 * 60 * 60 * 1000)
+      ); // Calculate week index (0-based)
+  
+      if (weekIndex >= 0 && weekIndex < weeksInYear) {
+        weeklyMoodsBefore[weekIndex].push(item.moodBefore);
+        weeklyMoodsAfter[weekIndex].push(item.moodAfter);
+      }
+    }
+  
+    // Calculate weekly averages
+    for (let i = 0; i < weeksInYear; i++) {
+      if (weeklyMoodsBefore[i].length > 0) {
+        weeklyAveragesBefore[i] =
+          weeklyMoodsBefore[i].reduce((sum, mood) => sum + mood, 0) /
+          weeklyMoodsBefore[i].length;
+      }
+  
+      if (weeklyMoodsAfter[i].length > 0) {
+        weeklyAveragesAfter[i] =
+          weeklyMoodsAfter[i].reduce((sum, mood) => sum + mood, 0) /
+          weeklyMoodsAfter[i].length;
+      }
+    }
+  
+    // Format the results
+    const formattedAverages = weeklyAveragesBefore.map((avgBefore, i) => ({
+      week: i + 1, // Week number (1-based)
+      avgMoodBefore: avgBefore,
+      avgMoodAfter: weeklyAveragesAfter[i],
+    }));
+  
+    return formattedAverages;
+}
+
+export const getFirstMeditationDate = async () => {
+    try {
+        const meditations = await getMeditations();
+        const formattedData = meditations.map((item) => ({
+              id: String(item.id),
+              date: item.date || "",
+              duration: item.duration || 0,
+              moodFigure: item.moodFigure || null,
+            }))
+            .sort((a, b) => new Date(a.date) - new Date(b.date));
+    
+
+            return new Date(formattedData[0].date);
+    } catch (e) {
+        console.error("Error getting date of first meditation", e);
+    }
+}
+
 export const getThisYearAverages = (meditations) => {
     const today = new Date();
-    const startOfYear = new Date(today.getFullYear(), 0, 1); // January 1st
-    const endOfYear = new Date(today.getFullYear(), 11, 31, 23, 59, 59, 999); // December 31st
+    const startOfYear = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()); // January 1st
+    const endOfYear = new Date(today.getFullYear(), today.getMonth(), today.getDate()); // December 31st
   
     // Filter meditations that fall within this year
     const thisYearMeditations = meditations.filter((item) => {

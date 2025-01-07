@@ -5,10 +5,15 @@ import { router, useLocalSearchParams } from "expo-router";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { AlarmContext } from "@/context/AlarmContext";
 import { useAlarm } from "@/context/AlarmContext";
+import { toTitleCase } from "@/storage";
+import { MenuItemNav } from "@/components/MenuItemNav";
+import { ALARM_DATA } from "@/constants/AlarmData";
+import { useSettings } from "@/context/SettingsContext";
 
 const EditAlarm = () => {
   const { onAlarmSet } = useLocalSearchParams();
   const { alarmDate, setAlarmDate, handleAlarmDelete } = useAlarm();
+  const {alarm} = useSettings();
 
   const handlePress = (alarmDate: Date) => {
     const date = alarmDate;
@@ -29,16 +34,9 @@ const EditAlarm = () => {
   };
 
   const handleAlarmDeletePress = () => {
-    handleAlarmDelete(); // Call the context-provided method
-    router.back(); // Navigate back
+    handleAlarmDelete();
+    router.back();
   };
-
-  //   const handleAlarmDelete = () => {
-  //     handleAlarmDelete(); // Call the context-provided method
-  //     setAlarmDate(null);
-  //     console.log("alarm deleted");
-  //     router.back();
-  //   };
 
   const [time, setTime] = useState(new Date());
   const [show, setShow] = useState(false);
@@ -83,6 +81,16 @@ const EditAlarm = () => {
             is24Hour={true}
             display={Platform.OS === "ios" ? "spinner" : "default"}
             onChange={onChange}
+          />
+        </View>
+        <View className="rounded-2xl bg-white mx-5 shadow-2xl">
+          <MenuItemNav
+            icon=""
+            hideIcon={true}
+            label="Sound"
+            value={toTitleCase(ALARM_DATA[alarm.value - 1].name)}
+            path="(modal)/edit-alarm-audio"
+            bottom={true}
           />
         </View>
 

@@ -25,10 +25,10 @@ const Checkup = () => {
   return (
     <View className="flex-1 bg-gray[100]">
       <SafeAreaView className="flex-1">
-        <View className="flex-1 p-5 py-5">
+        <View className="flex-1 mx-5 mt-5">
           <View className="relative">
             <Pressable
-              className="absolute left-0 px-5 py-2 z-10"
+              className="absolute left-0 py-2 z-10"
               onPress={() => {
                 console.log("close");
                 router.back();
@@ -42,7 +42,7 @@ const Checkup = () => {
             </Text>
 
             <Pressable
-              className="absolute right-0 px-5 py-2"
+              className="absolute right-0 py-2"
               onPress={() => {
                 const meditationId = uuid.v4();
                 newMeditation(meditationId, null, null);
@@ -63,8 +63,8 @@ const Checkup = () => {
             </Pressable>
           </View>
 
-          <View className="flex-grow">
-            <Text className="text-2xl font-semibold py-5 px-5">
+          <View>
+            <Text className="text-2xl font-semibold py-5">
               How are you feeling?
             </Text>
             <EmojiRating
@@ -74,7 +74,7 @@ const Checkup = () => {
               }}
             />
             <TextInput
-              className="bg-white shadow-md text-base shadow-gray-300/60 rounded-xl h-32 mx-5 my-5 p-3"
+              className="bg-white shadow-md text-base shadow-gray-300/60 rounded-xl h-40 my-5 p-3"
               onChangeText={onChangeText}
               value={text}
               placeholder="Say a few words about how you’re feeling at the moment"
@@ -87,7 +87,7 @@ const Checkup = () => {
         </View>
 
         {/* Ensure the button is fixed at the bottom */}
-        <View className="p-5">
+        <View className="mb-20">
           <CustomButton
             onPress={() => {
               if (isEmojiSelected) {

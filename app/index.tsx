@@ -11,6 +11,7 @@ import Colors from "@/constants/Colors";
 import { CalendarProvider } from "@/context/CalendarContext";
 import { MeditationsProvider } from "@/context/MeditationsContext";
 import { useFonts } from "expo-font";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export default function App() {
   const [fontsLoaded, error] = useFonts({

@@ -16,14 +16,13 @@ import {
   getMoodIcon,
   getMoodIconColor,
   Meditation,
+  getAllTimeAverages,
+  getFirstMeditationDate,
 } from "@/storage";
 import colors from "tailwindcss/colors";
 import { Feather } from "@expo/vector-icons";
-// import { FlatList } from "react-native-reanimated/lib/typescript/Animated";
 
 const ChartAverage = () => {
-  const [averages, setAverages] = useState([]);
-
   const [allTimeAverages, setAllTimeAverages] = useState<any>([]);
   const [thisWeekAverages, setThisWeekAverages] = useState<any>([]);
   const [thisMonthAverages, setThisMonthAverages] = useState<any>([]);
@@ -36,6 +35,7 @@ const ChartAverage = () => {
   const weekDays = ["S", "M", "T", "W", "T", "F", "S"];
 
   const DAYS_IN_MONTHS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  const [firstMeditationDate, setFirstMeditationDate] = useState(null);
 
   const { width } = useWindowDimensions();
   const [barMargin, setBarMargin] = useState(10);
@@ -44,67 +44,46 @@ const ChartAverage = () => {
   const INCREMENT_HEIGHT = 30;
   const INCREMENT_WIDTH = availableSpace / numBars;
 
-  const EXAMPLE_DATA = [
-    { avgMoodBefore: 1, avgMoodAfter: 5 },
-    { avgMoodBefore: 1, avgMoodAfter: 2 },
-    { avgMoodBefore: 3, avgMoodAfter: 5 },
-    { avgMoodBefore: 2, avgMoodAfter: 4 },
-    { avgMoodBefore: 2, avgMoodAfter: 5 },
-    { avgMoodBefore: 3, avgMoodAfter: 5 },
-    { avgMoodBefore: 1, avgMoodAfter: 4 },
-  ];
-
   const handleFilterChange = async (item: string) => {
-    const getMoodFig = async (range: string) => {
-      const moodFig = await getMoodFigureTimeRange(
-        getDateRange(range)[0],
-        getDateRange(range)[1]
-      );
+    try {
+      const dateRange = await getDateRange(item);
+      const moodFig = await getMoodFigureTimeRange(dateRange[0], dateRange[1]);
 
-      return moodFig !== null ? moodFig : null;
-    };
+      setMoodFigure(moodFig ? moodFig.toFixed(0) : 0);
 
-    const moodFigureThisWeek: any = await getMoodFig("This week");
-    const moodFigureThisMonth: any = await getMoodFig("This month");
-    const moodFigureThisYear: any = await getMoodFig("This year");
-    const moodFigureAllTime: any = await getMoodFig("All time");
+      if (item === "This week") {
+        setNumBars(7);
+        setBarMargin(10);
+      } else if (item === "This month") {
+        const today = new Date();
+        setNumBars(DAYS_IN_MONTHS[today.getMonth()]);
+        setBarMargin(2);
+      } else if (item === "This year") {
+        setNumBars(52);
+        setBarMargin(2);
+      } else if (item === "All time") {
+        setNumBars(52);
+        setBarMargin(2);
+      }
 
-    if (item === "This week") {
-      setNumBars(7);
-      setBarMargin(10);
-      setMoodFigure(moodFigureThisWeek.toFixed(0));
-    } else if (item === "This month") {
-      const today = new Date();
-      setNumBars(DAYS_IN_MONTHS[today.getMonth()]);
-      setBarMargin(2);
-      setMoodFigure(moodFigureThisMonth.toFixed(0));
-    } else if (item === "This year") {
-      setNumBars(52);
-      setBarMargin(2); // Adjust margin as needed
-      setMoodFigure(moodFigureThisYear.toFixed(0));
-    } else if (item === "All time") {
-      setNumBars(52);
-      setBarMargin(2);
-      setMoodFigure(moodFigureAllTime.toFixed(0));
+      setFilterRange(item);
+    } catch (error) {
+      console.error("Error changing filter:", error);
     }
-
-    setFilterRange(item);
   };
 
-  const getDateRange = (toFilter: string) => {
+  const getDateRange = async (toFilter: string) => {
     const today = new Date();
 
     switch (toFilter) {
       case "This week": {
-        const dayOfWeek = today.getDay(); // Sunday = 0, Monday = 1, etc.
+        const dayOfWeek = today.getDay();
         const startOfWeek = new Date(today);
         const endOfWeek = new Date(today);
 
-        // Set start to Sunday (subtract the dayOfWeek)
         startOfWeek.setDate(today.getDate() - dayOfWeek);
         startOfWeek.setHours(0, 0, 0, 0);
 
-        // Set end to Saturday (add remaining days of the week)
         endOfWeek.setDate(today.getDate() + (6 - dayOfWeek));
         endOfWeek.setHours(23, 59, 59, 999);
 
@@ -125,7 +104,7 @@ const ChartAverage = () => {
         return [startOfYear, endOfYear];
       }
       case "All time": {
-        return [new Date(0, 0, 0), new Date()];
+        return [firstMeditationDate, new Date()];
       }
       default: {
         return [new Date(0, 0, 0), new Date()];
@@ -134,14 +113,21 @@ const ChartAverage = () => {
   };
 
   useEffect(() => {
+    const fetchFirstMeditationDate = async () => {
+      const date = await getFirstMeditationDate();
+      setFirstMeditationDate(date);
+    };
+
+    fetchFirstMeditationDate();
+  }, []);
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const meditations = await getMeditations();
 
-        // Transform the array into the required object structure
         const formattedData = meditations.map((item: Meditation) => ({
-          //   id: String(index), // Use a string id for FlatList
-          date: new Date(item.date) || "",
+          date: new Date(item.date) || new Date(),
           moodBefore: item.moodBefore || 0,
           moodAfter: item.moodAfter || 0,
         }));
@@ -149,17 +135,24 @@ const ChartAverage = () => {
         setThisWeekAverages(getThisWeekAverages(formattedData));
         setThisMonthAverages(getThisMonthAverages(formattedData));
         setThisYearAverages(getThisYearAverages(formattedData));
+        setAllTimeAverages(
+          getAllTimeAverages(firstMeditationDate, formattedData)
+        );
 
-        // setMoodFigure(
-        //   getMoodFigureTimeRange(getDateRange()[0], getDateRange()[1])
-        // );
+        const dateRange = await getDateRange(filterRange);
+        const moodFig = await getMoodFigureTimeRange(
+          dateRange[0],
+          dateRange[1]
+        );
+
+        setMoodFigure(moodFig ? moodFig.toFixed(0) : 0);
       } catch (e) {
         console.error("Error fetching meditation data:", e);
       }
     };
 
     fetchData();
-  }, []);
+  }, [filterRange]);
 
   const renderFilterButton = ({ item }: { item: string }) => {
     return (
@@ -182,90 +175,55 @@ const ChartAverage = () => {
     );
   };
 
-  const renderChartLines = (marginBottom: number) => {
-    return (
-      <View>
+  const renderChartLines = (marginBottom: number) => (
+    <View>
+      {[300, 400, 300, 400, 300].map((color, index) => (
         <View
+          key={index}
           style={{
-            backgroundColor: colors.gray[300],
+            backgroundColor: colors.gray[color],
             height: 0.5,
-            marginBottom: marginBottom,
+            marginBottom: index < 4 ? marginBottom : 0,
           }}
         />
-        <View
-          style={{
-            backgroundColor: colors.gray[400],
-            height: 0.5,
-            marginBottom: marginBottom,
-          }}
-        />
-        <View
-          style={{
-            backgroundColor: colors.gray[300],
-            height: 0.5,
-            marginBottom: marginBottom,
-          }}
-        />
-        <View
-          style={{
-            backgroundColor: colors.gray[400],
-            height: 0.5,
-            marginBottom: marginBottom,
-          }}
-        />
-        <View
-          style={{
-            backgroundColor: colors.gray[300],
-            height: 0.5,
-            marginBottom: 0,
-          }}
-        />
-      </View>
-    );
-  };
+      ))}
+    </View>
+  );
 
-  const renderBar = ({ item }: { item: any }) => {
-    return (
+  const renderBar = ({ item }: { item: any }) => (
+    <View
+      style={{
+        width: INCREMENT_WIDTH,
+        height: INCREMENT_HEIGHT * 5,
+        flexDirection: "column",
+        justifyContent: "flex-end",
+        marginRight: barMargin,
+      }}
+    >
       <View
         style={{
+          height: INCREMENT_HEIGHT * item.avgMoodAfter,
           width: INCREMENT_WIDTH,
-          height: INCREMENT_HEIGHT * 5, // Adjust this for maximum height
-          flexDirection: "column",
-          justifyContent: "flex-end",
-          marginRight: barMargin,
+          backgroundColor: colors.green[300],
+          borderRadius: filterRange === "This week" ? 10 : 3,
+          marginBottom: 2,
+          position: "absolute",
+          zIndex: item.avgMoodAfter < item.avgMoodBefore ? 10 : 0,
         }}
-      >
-        <View
-          style={{
-            height: INCREMENT_HEIGHT * item.avgMoodAfter,
-            width: INCREMENT_WIDTH, // Add spacing between bars
-            backgroundColor: colors.green[300],
-            borderRadius: 10,
-            marginBottom: 2,
-            position: "absolute",
-            zIndex: item.avgMoodAfter < item.avgMoodBefore ? 10 : 0,
-          }}
-        />
-
-        <View
-          style={{
-            height: INCREMENT_HEIGHT * item.avgMoodBefore,
-            width: INCREMENT_WIDTH,
-            backgroundColor: colors.green[500],
-            borderRadius: 10,
-            zIndex: item.avgMoodBefore < item.avgMoodAfter ? 10 : 0,
-          }}
-        />
-      </View>
-    );
-  };
+      />
+      <View
+        style={{
+          height: INCREMENT_HEIGHT * item.avgMoodBefore,
+          width: INCREMENT_WIDTH,
+          backgroundColor: colors.green[500],
+          borderRadius: filterRange === "This week" ? 10 : 3,
+          zIndex: item.avgMoodBefore < item.avgMoodAfter ? 10 : 0,
+        }}
+      />
+    </View>
+  );
 
   const renderTimeline = () => {
-    const commonStyles = {
-      paddingTop: 10,
-      paddingBottom: 10,
-    };
-
     if (filterRange === "This week") {
       return (
         <FlatList
@@ -273,7 +231,6 @@ const ChartAverage = () => {
           renderItem={({ item }) => (
             <View
               style={{
-                ...commonStyles,
                 width: INCREMENT_WIDTH,
                 marginRight: barMargin,
                 alignItems: "center",
@@ -287,8 +244,8 @@ const ChartAverage = () => {
       );
     } else if (filterRange === "This month") {
       return (
-        <View className="flex-row relative" style={commonStyles}>
-          <Text className="absolute left-0 text-gray-400">
+        <View className="flex-row">
+          <Text className="left-0 text-gray-400">
             {new Date().toLocaleString("default", { month: "short" })}. 1
           </Text>
           <Text className="absolute right-0 text-gray-400">
@@ -299,13 +256,49 @@ const ChartAverage = () => {
       );
     } else if (filterRange === "This year") {
       return (
-        <View className="flex-row relative" style={commonStyles}>
-          <Text className="absolute left-0 text-gray-400">Jan.</Text>
-          <Text className="absolute right-0 text-gray-400">Dec.</Text>
+        <View className="flex-row relative">
+          <Text className="left-0 text-gray-400">
+            {new Date().toLocaleString("default", { month: "short" })}.{" "}
+            {new Date().getFullYear() - 1}
+          </Text>
+          <Text className="absolute right-0 text-gray-400">
+            {new Date().toLocaleString("default", { month: "short" })}.{" "}
+            {new Date().getFullYear()}
+          </Text>
+        </View>
+      );
+    } else if (filterRange === "All time") {
+      return (
+        <View className="flex-row relative">
+          <Text className="left-0 text-gray-400">
+            {firstMeditationDate.toLocaleString("default", { month: "short" })}.{" "}
+            {firstMeditationDate.getFullYear()}
+          </Text>
+          <Text className="absolute right-0 text-gray-400">Now</Text>
         </View>
       );
     }
   };
+
+  const renderGraph = () => (
+    <View>
+      <View className="relative">
+        <View>{renderChartLines(INCREMENT_HEIGHT)}</View>
+        <View
+          style={{ flexDirection: "row", justifyContent: "center" }}
+          className="absolute"
+        >
+          <FlatList
+            data={getCorrespondingData()}
+            renderItem={renderBar}
+            horizontal
+            scrollEnabled
+            showsHorizontalScrollIndicator={false}
+          />
+        </View>
+      </View>
+    </View>
+  );
 
   const getCorrespondingData = () => {
     switch (filterRange) {
@@ -317,42 +310,21 @@ const ChartAverage = () => {
         return thisYearAverages;
       case "All time":
         return allTimeAverages;
+      default:
+        return [];
     }
-  };
-
-  const renderGraph = () => {
-    return (
-      <View>
-        <View className="relative">
-          <View>{renderChartLines(INCREMENT_HEIGHT)}</View>
-          <View
-            style={{ flexDirection: "row", justifyContent: "center" }}
-            className="absolute"
-          >
-            <FlatList
-              data={getCorrespondingData()}
-              renderItem={renderBar}
-              horizontal={true}
-              scrollEnabled={true}
-              showsHorizontalScrollIndicator={false}
-            />
-          </View>
-        </View>
-        <View className="mt-10">{renderTimeline()}</View>
-      </View>
-    );
   };
 
   const getAverageText = () => {
     switch (filterRange) {
       case "This week":
-        return "Daily";
       case "This month":
         return "Daily";
       case "This year":
-        return "Weekly";
       case "All time":
         return "Weekly";
+      default:
+        return "";
     }
   };
 
@@ -361,17 +333,23 @@ const ChartAverage = () => {
       <FlatList
         data={filters}
         renderItem={renderFilterButton}
-        horizontal={true}
+        keyExtractor={(item) => item}
+        horizontal
       />
       <View className="my-5">{renderGraph()}</View>
+      <View className="mt-5 mb-3">{renderTimeline()}</View>
       <View>
         <View className="flex-row items-center pb-1">
           <View className="w-2 h-2 bg-green-500 rounded-full mr-1" />
-          <Text className="text-xs text-gray-400">{`${getAverageText()} average (Before meditation)`}</Text>
+          <Text className="text-xs text-gray-400">
+            {`${getAverageText()} average (Before meditation)`}
+          </Text>
         </View>
         <View className="flex-row items-center">
           <View className="w-2 h-2 bg-green-300 rounded-full mr-1" />
-          <Text className="text-xs text-gray-400">{`${getAverageText()} average (After meditating)`}</Text>
+          <Text className="text-xs text-gray-400">
+            {`${getAverageText()} average (After meditating)`}
+          </Text>
         </View>
       </View>
       <View className="h-[0.5] bg-gray-400 my-4" />

@@ -1,7 +1,9 @@
-import React, { useEffect, useRef } from "react";
-import { View, StyleSheet, Animated } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { View, StyleSheet, Animated, Text } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Colors from "@/constants/Colors";
+import colors, { current } from "tailwindcss/colors";
+import { opacity } from "react-native-reanimated/lib/typescript/Colors";
 
 export function BreathingCircle({
   isActive = false,
@@ -24,6 +26,9 @@ export function BreathingCircle({
 }) {
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const opacityAnim = useRef(new Animated.Value(0)).current;
+
+  const [currentState, setCurrentState] = useState("Inhale");
 
   useEffect(() => {
     if (isActive) {
@@ -61,6 +66,49 @@ export function BreathingCircle({
 
         const loop = () => {
           onBreatheStateChange?.(phases[step]);
+          setCurrentState(phases[step]);
+
+          if (phases[step] === "Hold") {
+            // Reset and start the opacity animation
+            opacityAnim.setValue(0); // Reset the animation value
+            Animated.loop(
+              Animated.sequence([
+                Animated.timing(opacityAnim, {
+                  toValue: 1,
+                  duration: (timeHold * 1000) / 6,
+                  useNativeDriver: true,
+                }),
+                Animated.timing(opacityAnim, {
+                  toValue: 0.5,
+                  duration: (timeHold * 1000) / 6,
+                  useNativeDriver: true,
+                }),
+                Animated.timing(opacityAnim, {
+                  toValue: 1,
+                  duration: (timeHold * 1000) / 6,
+                  useNativeDriver: true,
+                }),
+                Animated.timing(opacityAnim, {
+                  toValue: 0.5,
+                  duration: (timeHold * 1000) / 6,
+                  useNativeDriver: true,
+                }),
+                Animated.timing(opacityAnim, {
+                  toValue: 1,
+                  duration: (timeHold * 1000) / 6,
+                  useNativeDriver: true,
+                }),
+                Animated.timing(opacityAnim, {
+                  toValue: 0,
+                  duration: (timeHold * 1000) / 6,
+                  useNativeDriver: true,
+                }),
+              ])
+            ).start();
+          } else {
+            opacityAnim.stopAnimation(); // Stop the animation when leaving "Hold"
+          }
+
           timeoutRef.current = setTimeout(() => {
             step = (step + 1) % phases.length; // Cycle through phases
             loop(); // Trigger the next phase
@@ -69,16 +117,7 @@ export function BreathingCircle({
 
         loop(); // Start the first phase
       };
-
       startBreatheLoop();
-
-      // Cleanup on unmount or when isActive changes
-      return () => {
-        animation.stop();
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current);
-        }
-      };
     }
   }, [
     isActive,
@@ -92,6 +131,18 @@ export function BreathingCircle({
 
   return (
     <View style={styles.circleContainer}>
+      {currentState === "Hold" && (
+        <Animated.View
+          style={[
+            styles.outerCircle,
+            { width: initialSize + 5, height: initialSize + 5 },
+            {
+              transform: [{ scale: scaleAnim }], // Apply scale animation
+            },
+            { opacity: opacityAnim },
+          ]}
+        />
+      )}
       <Animated.View
         style={[
           styles.circle,
@@ -112,6 +163,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginVertical: 20,
+    position: "relative",
   },
   circle: {
     width: 100,
@@ -122,9 +174,19 @@ const styles = StyleSheet.create({
     shadowOpacity: 3,
     shadowRadius: 10,
     overflow: "hidden",
+    position: "absolute",
   },
   gradient: {
     flex: 1,
     borderRadius: 100,
+  },
+  outerCircle: {
+    width: 100,
+    height: 100,
+    borderRadius: 100,
+    borderWidth: 1,
+    borderColor: colors.green[400],
+    backgroundColor: colors.white,
+    overflow: "hidden",
   },
 });

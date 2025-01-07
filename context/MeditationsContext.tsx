@@ -28,7 +28,7 @@ export const MeditationsProvider = ({ children }: { children: any }) => {
   };
 
   // Delete a meditation
-  const deleteMeditation = async (id: UUIDTypes) => {
+  const deleteMeditation = async (id) => {
     try {
       await removeMeditation(id);
       await fetchMeditations(); // Refresh the meditations list

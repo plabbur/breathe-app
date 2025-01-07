@@ -37,7 +37,7 @@ import {
 
 const MeditationDetails = () => {
   const { id } = useLocalSearchParams(); // Extract the id from the route parameters
-  const { fromSummary } = useLocalSearchParams();
+  const { summary } = useLocalSearchParams();
   const { deleteMeditation } = useMeditations();
 
   const [loading, setLoading] = useState(true);
@@ -188,14 +188,10 @@ const MeditationDetails = () => {
         </View>
       </View>
 
-      {/* {fromSummary && renderBackButton()} */}
+      {summary && (<View style={{marginTop: -30}}/>)}
 
       <SafeAreaView className="flex-1">
-        <View style={{ marginTop: -20 }}>
-          {/* {fromSummary && renderBackButton()} */}
-        </View>
-
-        <ScrollView>
+        <ScrollView showsVerticalScrollIndicator={false}>
           <View className="mx-5 mt-5 mb-14">
             <Text className="text-gray-900/50 text-xl font-semibold mx-2">
               {getDateWeekday(date)}
@@ -319,11 +315,26 @@ const MeditationDetails = () => {
                 ))}
               </Swiper>
             </View>
-            <Pressable className="items-center my-16" onPress={handleDelete}>
-              <Text className="font-semibold text-red-600">
-                Delete meditation
-              </Text>
-            </Pressable>
+
+            {summary && (
+              <Pressable
+                className="my-3 rounded-full bg-green-400 items-center py-2.5 mx-32"
+                onPress={() => {
+                  router.dismiss();
+                  router.push("/(tabs)/activity");
+                }}
+              >
+                <Text className="text-white font-medium text-base">Done</Text>
+              </Pressable>
+            )}
+
+            {!summary && (
+              <Pressable className="items-center my-16" onPress={handleDelete}>
+                <Text className="font-semibold text-red-600">
+                  Delete meditation
+                </Text>
+              </Pressable>
+            )}
           </View>
         </ScrollView>
       </SafeAreaView>
