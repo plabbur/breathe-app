@@ -4,14 +4,11 @@ import React from "react";
 import Feather from "@expo/vector-icons/Feather";
 import colors from "tailwindcss/colors";
 
-import {
-  formatDuration,
-  formatDate,
-  getMoodIcon,
-  getMoodIconColor,
-} from "@/storage";
+import { formatDate, getMoodIcon, getMoodIconColor } from "@/storage";
 import { router } from "expo-router";
 import { UUIDTypes } from "uuid";
+
+import formatDuration from "@/utils/formatting/formatDuration";
 
 export default function MeditationActivityWidget({
   id,

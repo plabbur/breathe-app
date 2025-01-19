@@ -49,6 +49,7 @@ const DaysMeditation = () => {
 
   const renderMeditationActivityWidget = ({ item }) => (
     <Pressable
+      className="mx-2"
       onPress={() => {
         router.dismiss();
         router.push(`/activity/${item.id}`);
@@ -69,10 +70,10 @@ const DaysMeditation = () => {
   return (
     <View className="flex-1 bg-gray-200">
       {/* <SafeAreaView className="flex-1"> */}
-      <Text className="text-gray-900/50 text-xl font-semibold mx-10 mt-10">
+      <Text className="text-gray-900/50 text-xl font-semibold mx-5 mt-10">
         {getDateWeekday(new Date(date))}
       </Text>
-      <Text className="text-gray-900 text-3xl font-semibold mb-5 mx-10">
+      <Text className="text-gray-900 text-3xl font-semibold mb-5 mx-5">
         {new Date(date).toLocaleString("default", {
           month: "long",
           day: "numeric",

@@ -109,9 +109,6 @@ const ChooseVoice = () => {
   return (
     <SafeAreaView className="flex-1 bg-gray-200">
       <ScrollView>
-        <Text className="font-semibold text-gray-400 mx-8 mb-3">
-          Preferences
-        </Text>
         <View className="rounded-2xl bg-white mx-5 shadow-2xl">
           <Toggle
             icon=""

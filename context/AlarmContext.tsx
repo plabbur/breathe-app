@@ -37,15 +37,15 @@ const AlarmProvider = ({ children }: AlarmProviderProps) => {
   }, [alarmDate]);
 
   const handleAlarmDelete = () => {
-    setAlarmDate(null); // Clear the alarm
+    setAlarmDate(null);
     if (onAlarmDelete) {
-      onAlarmDelete(); // Trigger the registered callback
+      onAlarmDelete();
     }
     console.log("Alarm deleted.");
   };
 
   const setOnAlarmDelete = (callback: () => void) => {
-    setOnAlarmDeleteCallback(() => callback); // Set the callback
+    setOnAlarmDeleteCallback(() => callback);
   };
 
   return (

@@ -1,17 +1,14 @@
-import { View, Text, Pressable } from "react-native";
+import { View, Text } from "react-native";
 import React, { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router, SplashScreen } from "expo-router";
 import CustomButton from "@/components/CustomButton";
 import { MeditationProvider } from "@/context/MeditationContext";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { clearMeditations } from "@/storage";
 import { LinearGradient } from "expo-linear-gradient";
 import Colors from "@/constants/Colors";
-import { CalendarProvider } from "@/context/CalendarContext";
-import { MeditationsProvider } from "@/context/MeditationsContext";
 import { useFonts } from "expo-font";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { clearMeditations } from "@/storage";
+import { generateRandomMeditationData } from "@/constants/EXAMPLE_DATA";
 
 export default function App() {
   const [fontsLoaded, error] = useFonts({
@@ -68,6 +65,7 @@ export default function App() {
 
             <CustomButton
               onPress={() => {
+                // generateRandomMeditationData();
                 router.push("/home");
                 // clearMeditations();
               }}

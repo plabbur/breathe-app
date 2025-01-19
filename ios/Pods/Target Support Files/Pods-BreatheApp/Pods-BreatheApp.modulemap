@@ -1,0 +1,6 @@
+module Pods_BreatheApp {
+  umbrella header "Pods-BreatheApp-umbrella.h"
+
+  export *
+  module * { export * }
+}

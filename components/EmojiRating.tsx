@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Text, View, StyleSheet, Pressable } from "react-native";
 import * as Haptics from "expo-haptics";
-import { Colors } from "@/constants/Colors";
 import colors from "tailwindcss/colors";
 import { Dimensions } from "react-native";
 
@@ -10,7 +9,17 @@ const windowWidth = Dimensions.get("window").width;
 // var emojiSelected = 1;
 const emojis = ["😔", "😕", "😐", "🙂", "😁"];
 
-export function EmojiButton({ index, text, selectedIndex, onPress, props }) {
+export function EmojiButton({
+  index,
+  text,
+  selectedIndex,
+  onPress,
+  props,
+}: {
+  index: number;
+  text: string;
+  selectedIndex: number;
+}) {
   return (
     <Pressable
       style={[

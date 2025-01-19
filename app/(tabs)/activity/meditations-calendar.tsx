@@ -7,6 +7,7 @@ import {
   getDateMonthNumeric,
   getDateYear,
   getDateFromString,
+  formatDateToYMD,
 } from "@/storage";
 import { CalendarList } from "react-native-calendars";
 import colors from "tailwindcss/colors";
@@ -26,9 +27,7 @@ const MeditationsCalendar = () => {
 
         // Transform the array into the required object structure
         const formattedData = meditations.reduce((acc, item) => {
-          const dateString = `${getDateYear(item.date)}-${getDateMonthNumeric(
-            item.date
-          )}-${getDateDay(item.date)}`;
+          const dateString = formatDateToYMD(item.date);
           acc[dateString] = {
             selected: true, // Mark the date as selected
           };
@@ -68,8 +67,6 @@ const MeditationsCalendar = () => {
 
   return (
     <View className="flex-1">
-      
-
       <SafeAreaView className="flex-1">
         <CalendarList
           ref={calendarRef}

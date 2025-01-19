@@ -94,7 +94,7 @@ const EditAlarm = () => {
           />
         </View>
 
-        <View className="items-center mt-10 bg-gray-200/50 mx-20 rounded-full">
+        <View className="items-center mt-12 bg-gray-200 mx-20 rounded-full">
           <Pressable onPress={handleAlarmDeletePress}>
             <Text className="text-red-500 font-semibold py-3">
               Delete alarm

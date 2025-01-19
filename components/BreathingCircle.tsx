@@ -7,6 +7,7 @@ import { opacity } from "react-native-reanimated/lib/typescript/Colors";
 
 export function BreathingCircle({
   isActive = false,
+  showHoldAnimation = true,
   timeInhale = 0,
   timeHold = 0,
   timeExhale = 0,
@@ -16,6 +17,7 @@ export function BreathingCircle({
   onBreatheStateChange = () => {},
 }: {
   isActive: boolean;
+  showHoldAnimation?: boolean;
   timeInhale: number;
   timeHold: number;
   timeExhale: number;
@@ -31,9 +33,10 @@ export function BreathingCircle({
   const [currentState, setCurrentState] = useState("Inhale");
 
   useEffect(() => {
+    let animation;
     if (isActive) {
       // Start the animation loop
-      const animation = Animated.loop(
+      animation = Animated.loop(
         Animated.sequence([
           Animated.timing(scaleAnim, {
             toValue: toValueInhale,
@@ -69,7 +72,6 @@ export function BreathingCircle({
           setCurrentState(phases[step]);
 
           if (phases[step] === "Hold") {
-            // Reset and start the opacity animation
             opacityAnim.setValue(0); // Reset the animation value
             Animated.loop(
               Animated.sequence([
@@ -119,6 +121,16 @@ export function BreathingCircle({
       };
       startBreatheLoop();
     }
+
+    return () => {
+      // Stop animations and timers
+      animation?.stop();
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+      opacityAnim.stopAnimation();
+    };
   }, [
     isActive,
     timeInhale,
@@ -131,7 +143,7 @@ export function BreathingCircle({
 
   return (
     <View style={styles.circleContainer}>
-      {currentState === "Hold" && (
+      {currentState === "Hold" && showHoldAnimation && (
         <Animated.View
           style={[
             styles.outerCircle,

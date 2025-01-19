@@ -35,6 +35,7 @@ const HomeScreen = () => {
           initialSize={100}
           onBreatheStateChange={() => {}}
           isActive={true}
+          showHoldAnimation={false}
         />
         <CustomButton
           onPress={() => {

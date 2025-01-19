@@ -30,7 +30,7 @@ export const createID = async () => {
 };
 
 // Save all meditations to AsyncStorage
-const saveMeditations = async (meditations) => {
+export const saveMeditations = async (meditations) => {
     try {
         await AsyncStorage.setItem(MEDITATIONS_KEY, JSON.stringify(meditations));
     } catch (e) {
@@ -107,7 +107,6 @@ export const updateMeditationEntry = async (id, moodAfter, entryAfter) => {
         meditation.moodAfter = moodAfter;
         meditation.entryAfter = entryAfter;
 
-
         if (meditation.moodBefore && meditation.moodAfter) {
             if (meditation.moodBefore > meditation.moodAfter) {
                  meditation.moodFigure = (-100 * (meditation.moodBefore / meditation.moodAfter));
@@ -125,8 +124,6 @@ export const updateMeditationEntry = async (id, moodAfter, entryAfter) => {
         throw new Error(`Meditation with id ${id} not found.`);
     }
 };
-
-
   
 // Update a meditation's duration
 export const updateMeditationDuration = async (id, duration) => {
@@ -140,68 +137,6 @@ export const updateMeditationDuration = async (id, duration) => {
     } else {
         throw new Error(`Meditation with id ${id} not found.`);
     }
-};
-
-
-export const getMeditation = async (id) => {
-    try {
-        const data = await AsyncStorage.getItem(MEDITATIONS_KEY);
-        const meditations = data ? JSON.parse(data) : [];
-        
-        if (meditations.length === 0) {
-            throw new Error(`No meditations found`);
-        }
-        
-        // Find the meditation by its unique id
-        const meditation = meditations.find((med) => med.id === id);
-        
-        if (!meditation) {
-            throw new Error(`Meditation with id ${id} not found`);
-        }
-
-        return new Meditation(
-            meditation.id,
-            meditation.moodBefore,
-            meditation.entryBefore,
-            meditation.date,
-            meditation.moodAfter,
-            meditation.entryAfter,
-            meditation.duration,
-            meditation.breathCount,
-            meditation.moodFigure,
-        );
-    } catch (e) {
-        console.error(`Error retrieving meditation with id ${id}:`, e);
-        throw e;
-    }
-};
-
-export const getLastMeditation = async () => {
-    try {
-        const meditations = await getMeditations();
-        if (meditations.length === 0) {
-            throw new Error(`No meditations found`);
-        }
-
-        // Sort meditations by date and get the most recent one
-        const lastMeditation = meditations.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
-
-        return new Meditation(
-            lastMeditation.id,
-            lastMeditation.moodBefore,
-            lastMeditation.entryBefore,
-            lastMeditation.date,
-            lastMeditation.moodAfter,
-            lastMeditation.entryAfter,
-            lastMeditation.duration,
-            lastMeditation.breathCount,
-            lastMeditation.moodFigure,
-        );
-    } catch (e) {
-        console.error(`Error retrieving last meditation`, e);
-        throw e;
-    }
-
 };
 
 // Calculate total breaths across all meditations
@@ -226,24 +161,6 @@ export const clearMeditations = async () => {
         throw e;
     }
 };
-
-export const removeMeditation = async (id) => {
-    try {
-        const data = await AsyncStorage.getItem(MEDITATIONS_KEY);
-        const meditations = data ? JSON.parse(data) : [];
-
-        // Filter out the meditation with the specified UUID
-        const updatedMeditations = meditations.filter(med => med.id !== id);
-
-        await saveMeditations(updatedMeditations);
-
-        console.log(`Meditation with id ${id} removed successfully.`);
-    } catch (e) {
-        console.error(`Error removing meditation with id ${id}:`, e);
-        throw e;
-    }
-};
-
 
 export const formatDuration = (duration) => {
     const formattedTimeHours = String(Math.floor((duration / (60 * 60)) % 60));
@@ -277,6 +194,14 @@ export const formatDate = (date) => {
     const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(date).toLocaleDateString("en-US", options);
   };
+
+export const formatDateToYMD = (date) => {
+  const d = new Date(date);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
 
 export const getDateDay = (date) => {
     const options = { day: "numeric" };

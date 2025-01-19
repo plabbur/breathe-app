@@ -104,7 +104,7 @@ const MeditationsActivity = () => {
               </Text>
             </Pressable>
           </View>
-
+          
           <FlatList
             data={filteredAndSortedData}
             keyExtractor={(item) => item.id.toString()} // Ensure unique keys
@@ -115,7 +115,7 @@ const MeditationsActivity = () => {
               </View>
             }
             contentContainerStyle={{ paddingHorizontal: 10, paddingBottom: 20 }}
-            nestedScrollEnabled // Allow the FlatList to scroll within the ScrollView
+            scrollEnabled={false}
           />
         </View>
       </ScrollView>

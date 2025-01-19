@@ -140,6 +140,14 @@ const ActivityLayout = () => {
             presentation: "modal",
           }}
         />
+
+        <Stack.Screen
+          name="(modal)/share-meditation"
+          options={{
+            headerShown: false,
+            presentation: "modal",
+          }}
+        />
       </Stack>
     </MeditationsProvider>
   );

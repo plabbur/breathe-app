@@ -20,7 +20,7 @@ interface AlarmSettings {
 interface SettingsContextType {
   instructor: InstructorSettings;
   alarm: AlarmSettings;
-  eventEmitter: EventEmitter<string | symbol, any>; // Add the eventEmitter property
+  eventEmitter: EventEmitter<string | symbol, any>;
 }
 
 export const SettingsContext = createContext<SettingsContextType>({
@@ -34,7 +34,7 @@ export const SettingsContext = createContext<SettingsContextType>({
     value: 1,
     updateValue: () => {},
   },
-  eventEmitter: new EventEmitter<string | symbol, any>(), // Add a default event emitter instance
+  eventEmitter: new EventEmitter<string | symbol, any>(),
 });
 
 // Provide Context
@@ -45,7 +45,7 @@ export const SettingsProvider = ({ children }: { children: any }) => {
 
   const SETTINGS_KEY = "appSettings";
 
-  const eventEmitter = new EventEmitter<string | symbol, any>(); // Ensure correct typing
+  const eventEmitter = new EventEmitter<string | symbol, any>();
 
   useEffect(() => {
     const loadSettings = async () => {

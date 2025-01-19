@@ -8,18 +8,10 @@ import {
   Alert,
   Share,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
-import MeditationActivityWidget from "@/components/MeditationActivityWidget";
 import ActivityFrame from "@/components/ActivityFrame";
-import CustomButton from "@/components/CustomButton";
-import {
-  formatDuration,
-  getMeditation,
-  getMoodIcon,
-  getMoodIconColor,
-  removeMeditation,
-} from "@/storage";
+import { getMoodIcon, getMoodIconColor } from "@/storage";
 import { Feather } from "@expo/vector-icons";
 import colors from "tailwindcss/colors";
 import { LinearGradient } from "expo-linear-gradient";
@@ -28,17 +20,17 @@ import Swiper from "react-native-swiper";
 import { useMeditations } from "@/context/MeditationsContext";
 
 import {
-  formatDate,
   getDateDay,
   getDateWeekday,
   getDateMonth,
   formatDurationString,
 } from "@/storage";
+// import { HoldItem } from "react-native-hold-menu";
 
 const MeditationDetails = () => {
   const { id } = useLocalSearchParams(); // Extract the id from the route parameters
   const { summary } = useLocalSearchParams();
-  const { deleteMeditation } = useMeditations();
+  const { deleteMeditation, fetchMeditationById } = useMeditations();
 
   const [loading, setLoading] = useState(true);
   const [confirmingDeletion, setConfirmingDeletion] = useState(false);
@@ -51,6 +43,28 @@ const MeditationDetails = () => {
   const [moodAfter, setMoodAfter] = useState(null);
   const [entryBefore, setEntryBefore] = useState(null);
   const [entryAfter, setEntryAfter] = useState(null);
+
+  const entryMenuItems = useMemo(
+    () => [
+      {
+        text: "Edit",
+        icon: () => <Feather name="edit" size={18} color={colors.gray[400]} />,
+        onPress: () => {
+          console.log("[ACTION]: Edit");
+        },
+      },
+      {
+        text: "Delete",
+        onPress: () => {
+          console.log("[ACTION]: Delete");
+        },
+        icon: () => <Feather name="trash" size={18} color={colors.red[500]} />,
+        withSeperator: true,
+        isDestructive: true,
+      },
+    ],
+    []
+  );
 
   const ENTRY_DATA = [
     { title: "Before", mood: moodBefore, entry: entryBefore },
@@ -70,7 +84,7 @@ const MeditationDetails = () => {
 
   const fetchMeditationData = async () => {
     try {
-      const meditation = await getMeditation(id);
+      const meditation = await fetchMeditationById(id);
       if (meditation) {
         setDuration(meditation.duration || 0);
         setBreathCount(meditation.breathCount || 0);
@@ -139,7 +153,12 @@ const MeditationDetails = () => {
       <Pressable
         onPress={() => {
           // console.log("hi");
-          onShare();
+          router.push({
+            pathname: `/(tabs)/activity/share-meditation`,
+            params: {
+              id: id,
+            },
+          });
         }}
       >
         <Feather name="share" size={28} color={colors.black[900]} />
@@ -188,7 +207,7 @@ const MeditationDetails = () => {
         </View>
       </View>
 
-      {summary && (<View style={{marginTop: -30}}/>)}
+      {summary && <View style={{ marginTop: -30 }} />}
 
       <SafeAreaView className="flex-1">
         <ScrollView showsVerticalScrollIndicator={false}>
@@ -291,6 +310,7 @@ const MeditationDetails = () => {
                 )}
               >
                 {ENTRY_DATA.map((item, index) => (
+                  // <HoldItem key={index} items={entryMenuItems}>
                   <View className="z-10 shadow-lg">
                     <Pressable
                       onPress={() => {
@@ -312,6 +332,7 @@ const MeditationDetails = () => {
                       />
                     </Pressable>
                   </View>
+                  // </HoldItem>
                 ))}
               </Swiper>
             </View>

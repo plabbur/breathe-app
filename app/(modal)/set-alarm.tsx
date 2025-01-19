@@ -32,7 +32,8 @@ const SetAlarm = () => {
     router.back();
   };
 
-  const [time, setTime] = useState(new Date());
+  const nowPlusTenMinutes = new Date(new Date().setMinutes(new Date().getMinutes() + 10));
+  const [time, setTime] = useState(nowPlusTenMinutes);
   const [show, setShow] = useState(false);
 
   const onChange = (event, selectedTime) => {

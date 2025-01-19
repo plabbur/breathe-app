@@ -6,6 +6,8 @@ import {
   getMeditations,
   getDateMonthNumeric,
   getDateYear,
+  formatDate,
+  formatDateToYMD,
 } from "@/storage";
 import { Calendar, DateData } from "react-native-calendars";
 import colors from "tailwindcss/colors";
@@ -34,6 +36,10 @@ const CalendarWidget = () => {
 
   const [markedDays, setMarkedDays] = useState("");
 
+  // const getDateStr = (date) => {
+  //   const options = {month}
+  // }
+
   useEffect(() => {
     const fetchMarkedDays = async () => {
       try {
@@ -41,14 +47,18 @@ const CalendarWidget = () => {
 
         // Transform the array into the required object structure
         const formattedData = meditations.reduce((acc, item) => {
-          const dateString = `${getDateYear(item.date)}-${getDateMonthNumeric(
-            item.date
-          )}-${getDateDay(item.date)}`;
+          // const dateString = `${getDateYear(item.date)}-${getDateMonthNumeric(
+          //   item.date
+          // )}-${String(getDateDay(item.date)).padStart(2, "0")}`; // Ensure day is padded
+          const dateString = formatDateToYMD(item.date);
+          console.log(dateString);
           acc[dateString] = {
             selected: true, // Mark the date as selected
           };
           return acc;
         }, {});
+
+        console.log(formattedData)
 
         setMarkedDays(formattedData);
       } catch (e) {
